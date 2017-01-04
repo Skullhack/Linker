@@ -11,7 +11,6 @@ int main(int argc, char *argv[]) {
 	FILE *f = NULL;
 	ELF_STRUCT* elf_struct = NULL;
 
-	// Checks for argc
 	if (argc != 2) {
 		fprintf(stderr, "must have exactly 1 arg (file name)\n");
 		return EXIT_FAILURE;
@@ -34,10 +33,8 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	// Displays header
 	display_header(elf_struct->elf_header);
 
-	// Clean exit
 	close_elf_struct(elf_struct);
 
 	return EXIT_SUCCESS;

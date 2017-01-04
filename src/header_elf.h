@@ -1,43 +1,10 @@
-/**
-  * @file elf_header.h
-  *	@date 8 Jan 2016
-  *	@brief Module used to read and display an ELF header.
-  */
-
 #ifndef __ELF_HEADER_H__
 #define __ELF_HEADER_H__
 
 #include <elf.h>
 #include <stdio.h>
 #include "struct_elf.h"
-/**
-  * @brief Displays information from an ELF header.
-  *
-  *	Prints in that particular order:
-  *	- Magic Number
-  *	- File Class
-  *	- Data Encoding
-  *	- Elf header Version Number
-  *	- Operating system and ABI
-  *	- ABI Version
-  *	- Object file type
-  *	- Required architecture
-  *	- Object file version
-  *	- Entry point (starting the process)
-  *	- header table's file offset
-  *	- section table's file offset
-  *	- flags
-  *	- Header's size
-  *	- Size of one entry in the file's program header table
-  *	- Number of entries in the file's program header table
-  *	- Size of one entry in the file's section header table
-  *	- Number of entries in the file's section header table
-  *	- section header table index of the entry associated
-  *	  with the section name string table
-  * @param elf_header The header to be displayed.
-  *	@return -1 if not a 32bits ELF header.
-  * @return 1 otherwhise.
-  */
+
 int display_header(Elf32_Ehdr *elf_header);
 
 /**

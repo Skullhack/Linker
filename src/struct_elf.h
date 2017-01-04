@@ -13,7 +13,16 @@ typedef struct ELF_STRUCT {
 
 	FILE* elf_file;
 	Elf32_Ehdr *elf_header;
-	int error_code;
+	Elf32_Shdr *a_shdr;
+	Elf32_Sym *a_sym;
+	Elf32_Rel *a_rel;
+	Elf32_Rela *a_rela;
+	unsigned char **sections_content;
+	char *a_section_names;
+	int nb_sections;
+	int str_table_idx;
+	int symb_table_idx;
+	int error_code; 
 
 } ELF_STRUCT;
 
