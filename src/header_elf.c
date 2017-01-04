@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include "util.h"
-#include "elf_header.h"
+#include "header_elf.h"
 
 int display_header(Elf32_Ehdr *elf_header) {
 
@@ -72,7 +72,7 @@ int display_header(Elf32_Ehdr *elf_header) {
 
     printf("║ Size of one entry in the section header table (bytes): │ %-46d║\n", elf_header->e_shentsize);
 
-    printf("║ Number of entries in the section header table:         │ ", "");
+    printf("║ Number of entries in the section header table:         │ ");
     if (elf_header->e_shnum == 0) printf("0 (No section header table)                ║\n");
     else printf("%-46d║\n", elf_header->e_shnum);
 
@@ -96,7 +96,7 @@ int read_header(ELF_STRUCT* elf_struct) {
     }
 
     // big endian / little endian
-    reverse_needed = this_needs_reverse( elf_struct->elf_header->e_ident[EI_DATA] );
+    reverse_needed = need_reverse( elf_struct->elf_header->e_ident[EI_DATA] );
 
     if (reverse_needed) {
 

@@ -9,7 +9,7 @@
 
 #include <elf.h>
 #include <stdio.h>
-#include "elf_struct.h"
+#include "struct_elf.h"
 /**
   * @brief Displays information from an ELF header.
   *

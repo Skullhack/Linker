@@ -13,6 +13,7 @@ typedef struct ELF_STRUCT {
 
 	FILE* elf_file;
 	Elf32_Ehdr *elf_header;
+	int error_code;
 
 } ELF_STRUCT;
 
