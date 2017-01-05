@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "struct_elf.h"
+#include "global_struct.h"
 #include "gestion_elf.h"
 #include "header_elf.h"
 #include "linker.h"

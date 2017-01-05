@@ -1,7 +1,7 @@
 #ifndef __LINKER_H__
 #define __LINKER_H__
 
-#include "struct_elf.h"
+#include "global_struct.h"
 
 void affichageComplet(ELF_STRUCT* elf_struct);
 void affichageHeader(ELF_STRUCT* elf_struct);
