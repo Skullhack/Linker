@@ -4,6 +4,7 @@
 #include "section_header.h"
 #include "util.h"
 #include "global_struct.h"
+#include <string.h>
 
 
 /**********************************/
@@ -47,7 +48,8 @@ void Affichage_section(ELF_STRUCT * elf ){
 		printf("│%-7x",elf->a_shdr[i].sh_offset);
 		printf("│%-7x",elf->a_shdr[i].sh_size);
 		printf("│%-3x",elf->a_shdr[i].sh_entsize);
-		printf("│%-4s",case_flags(elf->a_shdr[i].sh_flags));
+		case_flags(elf->a_shdr[i].sh_flags);
+
 		printf("│%-3x",elf->a_shdr[i].sh_link);
 		printf("│%-4x",elf->a_shdr[i].sh_info);
 		printf("│%-3x║\n",elf->a_shdr[i].sh_addralign);
@@ -58,21 +60,25 @@ void Affichage_section(ELF_STRUCT * elf ){
 void get_name(ELF_STRUCT * elf,Elf32_Word name ,int numero){
 
 	int offset = (int) elf->a_shdr[elf->elf_header->e_shstrndx].sh_offset;
+	int nom = (int)  elf->a_shdr[numero].sh_name;
 
-	fseek(elf->elf_file,offset+elf->a_shdr[numero].sh_name,SEEK_SET);
+	fseek(elf->elf_file,offset+nom,SEEK_SET);
 
 	char c;
 	int cpt = 1;
 	while ( (c = fgetc(elf->elf_file)) != '\0') {
 		cpt++;
 	}
+
+	fseek(elf->elf_file,offset+nom,SEEK_SET);
+
 	char str[cpt];
 	fgets(str,cpt,elf->elf_file);
 
 	printf("│%-17s",str);
 }
 /************************************/
-char* case_flags(Elf32_Word flag) {
+void case_flags(Elf32_Word flag) {
 	//printf("\n\n%x",SHF_WRITE);
 	//printf("\n\n%x",SHF_ALLOC);
 	//printf("\n\n%x",SHF_EXECINSTR);
@@ -89,27 +95,55 @@ char* case_flags(Elf32_Word flag) {
 	//printf("\n\n%x",SHF_ORDERED);
 	//printf("\n\n%x",SHF_EXCLUDE);
 	//printf("\n\n%x",flag);
-	
-    switch(flag) {
 
-	case SHF_WRITE:	    		return "W";
-	case SHF_ALLOC:	     		return "A";
-	case SHF_EXECINSTR:		return "X";
-	case SHF_MERGE:	     		return "M";
-	case SHF_STRINGS:	   	return "S";
-	case SHF_INFO_LINK:	 	return "I";
-	case SHF_LINK_ORDER	: 	return "L";
-	case SHF_OS_NONCONFORMING: 	return "x";
-	case SHF_GROUP:	     		return "G";
-	case SHF_TLS:		     	return "T";
-	case SHF_COMPRESSED:	  	return "C";
-	case SHF_MASKOS:	     	return "o";
-	case SHF_MASKPROC:	    	return "p";
-	case SHF_ORDERED:	      	return "O";
-	case SHF_EXCLUDE:	      	return "E";
-	default: 			return " ";
-    }
+	int tmp = flag;
+	int cpt = 0;
+	int result = 0;
+	char str[3]="";
+  printf("│");
+	while(tmp!=0){
 
+		if(tmp&1){
+			result= 1<<cpt;
+				 switch(result) {
+						case SHF_WRITE:	    		strcat(str,"W");
+								break;
+						case SHF_ALLOC:	     		strcat(str,"A");
+								break;
+						case SHF_EXECINSTR:		strcat(str,"X");
+								break;
+						case SHF_MERGE:	     		strcat(str,"M");
+								break;
+						case SHF_STRINGS:	   	strcat(str,"S");
+								break;
+						case SHF_INFO_LINK:	 	strcat(str,"I");
+								break;
+						case SHF_LINK_ORDER	: 	strcat(str,"L");
+								break;
+						case SHF_OS_NONCONFORMING: 	strcat(str,"x");
+								break;
+						case SHF_GROUP:	     		strcat(str,"G");
+								break;
+						case SHF_TLS:		     	strcat(str,"T");
+								break;
+						case SHF_COMPRESSED:	  	strcat(str,"C");
+								break;
+						case SHF_MASKOS:	     	strcat(str,"o");
+								break;
+						case SHF_MASKPROC:	    	strcat(str,"p");
+								break;
+						case SHF_ORDERED:	      	strcat(str,"O");
+								break;
+						case SHF_EXCLUDE:	      	strcat(str,"E");
+								break;
+						default: 			strcat(str,"    ");
+		  }
+		}
+		tmp= tmp>>1;
+		cpt++;
+	}
+	printf("%-4s",str);
+ 
 }
 /*
 char* case_flags(Elf32_Word flag) {
