@@ -9,6 +9,8 @@ linker : linker.o init.o header_elf.o util.o section_header.o table_symbole.o
 program_header: program_header.o init.o header_elf.o util.o section_header.o
 	$(CC) -o $@ $^
 
+program_table_symbole: program_table_symbole.o init.o header_elf.o util.o section_header.o
+
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
