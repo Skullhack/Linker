@@ -3,7 +3,7 @@
 
 #include <elf.h>
 #include <stdio.h>
-#include "struct_elf.h"
+#include "global_struct.h"
 
 int display_header(Elf32_Ehdr *elf_header);
 
