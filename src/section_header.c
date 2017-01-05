@@ -37,9 +37,9 @@ int header_section(ELF_STRUCT * elf ){
 /************************************/
 void Affichage_section(ELF_STRUCT * elf ){
 	printf("╔═══════════════════════════════════════════════════════════════════════════════════════╗\n");
-	printf("║                                     \e[1;31mSection :\e[0m                                         ║\n");
+	printf("║                                 \e[1;31mEn-tête de section :\e[0m                                  ║\n");
 	printf("╟─────┬─────────────────┬───────────────┬─────────┬───────┬───────┬───┬────┬───┬────┬───╢\n");
-	printf("║%-5s│%-17s│%-15s│%-9s│%-7s│%-7s│%-3s│%-4s│%-3s│%-4s│%-3s║\n","[Nr]","Nom","Type","Adr","Offset","Taille","ES","Fan","LN","Inf","Al");
+	printf("║%-5s│%-17s│%-15s│%-9s│%-7s│%-7s│%-3s│%-4s│%-3s│%-4s│%-3s║\n","[Nr]","Nom","Type","Adr","Offset","Taille","ES","Flg","LN","Inf","Al");
 	for(int i = 0; i <  elf->elf_header->e_shnum; i++){
 		printf("║  %-3d",i);
 		get_name(elf,elf->a_shdr[i].sh_name,i);
@@ -55,6 +55,13 @@ void Affichage_section(ELF_STRUCT * elf ){
 		printf("│%-3x║\n",elf->a_shdr[i].sh_addralign);
 	}
 	printf("╚═════╧═════════════════╧═══════════════╧═════════╧═══════╧═══════╧═══╧════╧═══╧════╧═══╝\n");
+	printf("\nClés des Flags :");
+	printf("\n  W (écriture), A (allocation), X(exécution), M (fusion)");
+	printf("\n  S (chaînes), I (info), L (ordre des liens), G (groupe)");
+	printf("\n  T (TLS), E (exclu), x (inconnu), o (spécifique à l'OS)");
+	printf("\n  O (traitement additionel requis pour l'OS)");
+	printf("\n  p (spécifique au processeur), N (OS non conforme)");
+	printf("\n  C (compressé)\n");
 }
 /************************************/
 void get_name(ELF_STRUCT * elf,Elf32_Word name ,int numero){
@@ -79,22 +86,6 @@ void get_name(ELF_STRUCT * elf,Elf32_Word name ,int numero){
 }
 /************************************/
 void case_flags(Elf32_Word flag) {
-	//printf("\n\n%x",SHF_WRITE);
-	//printf("\n\n%x",SHF_ALLOC);
-	//printf("\n\n%x",SHF_EXECINSTR);
-	//printf("\n\n%x",SHF_MERGE);
-	//printf("\n\n%x",SHF_STRINGS);
-	//printf("\n\n%x",SHF_INFO_LINK);
-	//printf("\n\n%x",SHF_LINK_ORDER);
-	//printf("\n\n%x",SHF_OS_NONCONFORMING);
-	//printf("\n\n%x",SHF_GROUP);
-	//printf("\n\n%x",SHF_TLS);
-	//printf("\n\n%x",SHF_COMPRESSED);
-	//printf("\n\n%x",SHF_MASKOS);
-	//printf("\n\n%x",SHF_MASKPROC);
-	//printf("\n\n%x",SHF_ORDERED);
-	//printf("\n\n%x",SHF_EXCLUDE);
-	//printf("\n\n%x",flag);
 
 	int tmp = flag;
 	int cpt = 0;
@@ -106,37 +97,37 @@ void case_flags(Elf32_Word flag) {
 		if(tmp&1){
 			result= 1<<cpt;
 				 switch(result) {
-						case SHF_WRITE:	    		strcat(str,"W");
+						case SHF_WRITE:	    				strcat(str,"W");
 								break;
-						case SHF_ALLOC:	     		strcat(str,"A");
+						case SHF_ALLOC:	     				strcat(str,"A");
 								break;
-						case SHF_EXECINSTR:		strcat(str,"X");
+						case SHF_EXECINSTR:					strcat(str,"X");
 								break;
-						case SHF_MERGE:	     		strcat(str,"M");
+						case SHF_MERGE:	     				strcat(str,"M");
 								break;
-						case SHF_STRINGS:	   	strcat(str,"S");
+						case SHF_STRINGS:	   				strcat(str,"S");
 								break;
-						case SHF_INFO_LINK:	 	strcat(str,"I");
+						case SHF_INFO_LINK:	 				strcat(str,"I");
 								break;
-						case SHF_LINK_ORDER	: 	strcat(str,"L");
+						case SHF_LINK_ORDER	: 			strcat(str,"L");
 								break;
-						case SHF_OS_NONCONFORMING: 	strcat(str,"x");
+						case SHF_OS_NONCONFORMING: 	strcat(str,"N");
 								break;
-						case SHF_GROUP:	     		strcat(str,"G");
+						case SHF_GROUP:	     				strcat(str,"G");
 								break;
-						case SHF_TLS:		     	strcat(str,"T");
+						case SHF_TLS:		     				strcat(str,"T");
 								break;
-						case SHF_COMPRESSED:	  	strcat(str,"C");
+						case SHF_COMPRESSED:	  		strcat(str,"C");
 								break;
-						case SHF_MASKOS:	     	strcat(str,"o");
+						case SHF_MASKOS:	     			strcat(str,"o");
 								break;
-						case SHF_MASKPROC:	    	strcat(str,"p");
+						case SHF_MASKPROC:	    		strcat(str,"p");
 								break;
-						case SHF_ORDERED:	      	strcat(str,"O");
+						case SHF_ORDERED:	      		strcat(str,"O");
 								break;
-						case SHF_EXCLUDE:	      	strcat(str,"E");
+						case SHF_EXCLUDE:	      		strcat(str,"E");
 								break;
-						default: 			strcat(str,"    ");
+						default: 										strcat(str,"x");
 		  }
 		}
 		tmp= tmp>>1;
@@ -145,106 +136,45 @@ void case_flags(Elf32_Word flag) {
 	printf("%-4s",str);
  
 }
-/*
-char* case_flags(Elf32_Word flag) {
-    switch(flag) {
 
-	case SHF_WRITE:	    		return " Writable";
-	case SHF_ALLOC:	     		return " Occupies memory during execution ";
-	case SHF_EXECINSTR:		return " Executable";
-	case SHF_MERGE:	     		return " Might be merged ";
-	case SHF_STRINGS:	   	return " Contains nul-terminated strings";
-	case SHF_INFO_LINK:	 	return " `sh_info' contains SHT index ";
-	case SHF_LINK_ORDER	: 	return " Preserve order after combining ";
-	case SHF_OS_NONCONFORMING: 	return " Non-standard OS specific handling required";
-	case SHF_GROUP:	     		return " Section is member of a group.";
-	case SHF_TLS:		     	return " Section hold thread-local data.";
-	case SHF_COMPRESSED:	  	return " Section with compressed data.";
-	case SHF_MASKOS:	     	return " OS-specific.";
-	case SHF_MASKPROC:	    	return " Processor-specific ";
-	case SHF_ORDERED:	      	return " Special ordering requirement (Solaris).";
-	case SHF_EXCLUDE:	      	return " Section is excluded unless ";
-	default: 			return " aucun";
-    }
-
-}*/
 /************************************/
 char* case_type(Elf32_Word sh_type){
 	switch(sh_type) {
 		case SHT_NULL:	      		return " NULL ";
-		case SHT_PROGBITS:	      	return " PROGBITS";
+		case SHT_PROGBITS:	      return " PROGBITS";
 		case SHT_SYMTAB:	      	return " SYMTAB";
 		case SHT_STRTAB:	      	return " STRTAB";
-		case SHT_RELA:	      		return " Relocation entries with addends ";
-		case SHT_HASH:	      		return " Symbol hash table ";
-		case SHT_DYNAMIC:	      	return " Dynamic linking information ";
-		case SHT_NOTE:	      		return " Notes ";
+		case SHT_RELA:	      		return " RELA";
+		case SHT_HASH:	      		return " HASH";
+		case SHT_DYNAMIC:	      	return " DYNAMIC";
+		case SHT_NOTE:	      		return " NOTE";
 		case SHT_NOBITS:	      	return " NOBITS";
-		case SHT_REL:	      		return " Relocation entries, no addends ";
-		case SHT_SHLIB:	      		return " Reserved ";
-		case SHT_DYNSYM:	      	return " Dynamic linker symbol table ";
-		case SHT_INIT_ARRAY:	      	return " Array of constructors ";
-		case SHT_FINI_ARRAY:	      	return " Array of destructors ";
-		case SHT_PREINIT_ARRAY:	      	return " Array of pre-constructors ";
-		case SHT_GROUP:	      		return " Section group ";
-		case SHT_SYMTAB_SHNDX:	      	return " Extended section indeces ";
-		case SHT_NUM:	      		return " Number of defined types.  ";
-		case SHT_LOOS:	      		return " Start OS-specific.  ";
-		case SHT_GNU_ATTRIBUTES:	return " Object attributes.  ";
-		case SHT_GNU_HASH:	      	return " GNU-style hash table.  ";
-		case SHT_GNU_LIBLIST:	      	return " Prelink library list ";
-		case SHT_CHECKSUM:	      	return " Checksum for DSO content.  ";
-		case SHT_LOSUNW:	     	return " Sun-specific low bound.  ";
-		case SHT_SUNW_COMDAT:		return " SHT_SUNW_COMDAT ";
-		case SHT_SUNW_syminfo:		return " SHT_SUNW_syminfo";
-		case SHT_GNU_verdef:	      	return " Version definition section.  ";
-		case SHT_GNU_verneed:	      	return " Version needs section.  ";
-		case SHT_HISUNW:	      	return " Sun-specific high bound.  ";
-		case SHT_LOPROC:	      	return " Start of processor-specific ";
-		case SHT_HIPROC:	      	return " End of processor-specific ";
-		case SHT_LOUSER:	      	return " Start of application-specific ";
-		case SHT_HIUSER:	      	return " End of application-specific ";
-		default: 			return " ";
+		case SHT_REL:	      			return " REL";
+		case SHT_SHLIB:	      		return " SHLIB";
+		case SHT_DYNSYM:	      	return " DYNSYM";
+		case SHT_INIT_ARRAY:	    return " INIT_ARRAY";
+		case SHT_FINI_ARRAY:	    return " FINI_ARRAY";
+		case SHT_PREINIT_ARRAY:	  return " PREINIT_ARRAY";
+		case SHT_GROUP:	      		return " GROUP";
+		case SHT_SYMTAB_SHNDX:	  return " SYMTAB_SHNDX";
+		case SHT_NUM:	      			return " NUM";
+		case SHT_LOOS:	      		return " LOOS";
+		case SHT_GNU_ATTRIBUTES:	return " GNU_ATTRIBUTES";
+		case SHT_GNU_HASH:	      return " GNU_HASH";
+		case SHT_GNU_LIBLIST:	    return " GNU_LIBLIST";
+		case SHT_CHECKSUM:	      return " CHECKSUM";
+		case SHT_LOSUNW:	     		return " LOSUNW";
+		case SHT_SUNW_COMDAT:			return " SUNW_COMDAT";
+		case SHT_SUNW_syminfo:		return " SUNW_syminfo";
+		case SHT_GNU_verdef:	    return " GNU_verdef";
+		case SHT_GNU_verneed:	    return " GNU_verneed";
+		case SHT_HISUNW:	      	return " HISUNW";
+		case SHT_LOPROC:	      	return " LOPROC";
+		case SHT_HIPROC:	      	return " HIPROC";
+		case SHT_LOUSER:	      	return " LOUSER";
+		case SHT_HIUSER:	      	return " HIUSER";
+		default: 									return " ";
 	}
 }
-/*
-char* case_type(Elf32_Word sh_type){
-	switch(sh_type) {
-		case SHT_NULL:	      		return " NULL ";
-		case SHT_PROGBITS:	      	return " Program data ";
-		case SHT_SYMTAB:	      	return " Symbol table ";
-		case SHT_STRTAB:	      	return " String table ";
-		case SHT_RELA:	      		return " Relocation entries with addends ";
-		case SHT_HASH:	      		return " Symbol hash table ";
-		case SHT_DYNAMIC:	      	return " Dynamic linking information ";
-		case SHT_NOTE:	      		return " Notes ";
-		case SHT_NOBITS:	      	return " Program space with no data (bss) ";
-		case SHT_REL:	      		return " Relocation entries, no addends ";
-		case SHT_SHLIB:	      		return " Reserved ";
-		case SHT_DYNSYM:	      	return " Dynamic linker symbol table ";
-		case SHT_INIT_ARRAY:	      	return " Array of constructors ";
-		case SHT_FINI_ARRAY:	      	return " Array of destructors ";
-		case SHT_PREINIT_ARRAY:	      	return " Array of pre-constructors ";
-		case SHT_GROUP:	      		return " Section group ";
-		case SHT_SYMTAB_SHNDX:	      	return " Extended section indeces ";
-		case SHT_NUM:	      		return " Number of defined types.  ";
-		case SHT_LOOS:	      		return " Start OS-specific.  ";
-		case SHT_GNU_ATTRIBUTES:	return " Object attributes.  ";
-		case SHT_GNU_HASH:	      	return " GNU-style hash table.  ";
-		case SHT_GNU_LIBLIST:	      	return " Prelink library list ";
-		case SHT_CHECKSUM:	      	return " Checksum for DSO content.  ";
-		case SHT_LOSUNW:	     	return " Sun-specific low bound.  ";
-		case SHT_SUNW_COMDAT:		return " SHT_SUNW_COMDAT ";
-		case SHT_SUNW_syminfo:		return " SHT_SUNW_syminfo";
-		case SHT_GNU_verdef:	      	return " Version definition section.  ";
-		case SHT_GNU_verneed:	      	return " Version needs section.  ";
-		case SHT_HISUNW:	      	return " Sun-specific high bound.  ";
-		case SHT_LOPROC:	      	return " Start of processor-specific ";
-		case SHT_HIPROC:	      	return " End of processor-specific ";
-		case SHT_LOUSER:	      	return " Start of application-specific ";
-		case SHT_HIUSER:	      	return " End of application-specific ";
-		default: 			return " aucun";
-	}
-}*/
 /************************************/
 
