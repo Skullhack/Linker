@@ -1,17 +1,18 @@
 #include <stdlib.h>
 
 #include "global_struct.h"
-#include "gestion_elf.h"
+#include "init.h"
 #include "header_elf.h"
 #include "section_header.h"
-/*#include "elf_symbol_table.h"
-#include "elf_relocate.h"
+#include "table_symbole.h"
+/*#include "elf_relocate.h"
 #include "elf_section_content.h"*/
 
 int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 
-	/*int nb_symb_entries = 0;
-	int size_rel = 0;
+	int idx_tab_sym = 0;
+	int nb_sym;
+	/*int size_rel = 0;
 	int size_rela = 0;
 	int total_size_sections_content = 0;
 	int i = 0;*/
@@ -58,23 +59,28 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 			// error code
 			return -1;
 		}
+	}*/
+
+	//Récupère le nombre de symboles
+	while(idx_tab_sym < elf_struct->elf_header->e_shnum && elf_struct->a_shdr[idx_tab_sym].sh_type != 2){
+		idx_tab_sym += 1;	
 	}
 
-	// Now that elf_header and a_shdr are initialized, 
-	// we can retrieve the indexes for the symb and str tables
-	elf_struct->symb_table_idx = get_symb_shdr_index(elf_struct);
-	if (elf_struct->symb_table_idx == -1) {
-		fprintf(stderr, "Error : couldn't find symbol table index in section headers tab. Break. \n");
-		// error code
-		return -1;
-	}
-	elf_struct->str_table_idx = get_str_array_index(elf_struct);
-	if (elf_struct->str_table_idx == -1) {
-		fprintf(stderr, "Error : couldn't find symbol string table index in section headers tab. Break. \n");
-		// error code
-		return -1;
-	}
+	nb_sym = elf_struct->a_shdr[idx_tab_sym].sh_size / sizeof(Elf32_Sym);
 
+	// Charge la table des symboles dans la structure
+	elf_struct->a_sym = malloc ( sizeof (Elf32_Sym) * nb_sym );
+	if (elf_struct->a_sym == NULL) {
+		elf_struct->error_code = ERROR_MALOC_A_SHDR;
+		return -1;
+	}
+	if ( creer_table_symbole(elf_struct) == -1 ) {
+		elf_struct->error_code = ERROR_FILL_A_SHDR;
+		return -1;
+	}
+	/*
+
+	
 	// Now that symb_index is initialized, we can retrieve the number of symb entries
 	nb_symb_entries = get_nb_symb_entries(elf_struct->a_shdr[elf_struct->symb_table_idx]);
 
