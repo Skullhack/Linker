@@ -18,7 +18,7 @@ linker.o: linker.h global_struct.h init.h header_elf.h util.h section_header.h
 gestion_elf.o: init.h global_struct.h header_elf.h section_header.h
 header_elf.o: header_elf.h global_struct.h
 section_header.o: section_header.h global_struct.h util.h
-table_symbole.o: table_symbole.h global_struct.h
+table_symbole.o: table_symbole.h global_struct.h util.h
 util.o: util.h
 
 clean:

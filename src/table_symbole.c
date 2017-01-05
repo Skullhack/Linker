@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <elf.h>
 
+#include "util.h"
+#include "global_struct.h"
+
 int creer_table_symbole(ELF_STRUCT * elf){
 	//table_symboles tab_symb;
 	//uint16_t taille_sections;
