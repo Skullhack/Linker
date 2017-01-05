@@ -2,12 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "util.h"
-#include "struct_elf.h"
-
-void Affichage_section(ELF_STRUCT * elf );
-char* case_flags(Elf32_Word flag);
-char* case_type(Elf32_Word sh_type);
-int header_section(ELF_STRUCT * elf );
+#include "global_struct.h"
 
 
 /**********************************/
@@ -56,7 +51,27 @@ void Affichage_section(ELF_STRUCT * elf ){
 	}
 }
 /************************************/
+char* get_name(ELF_STRUCT * elf,Elf32_Word name ,int numero){
 
+	int i = 0;
+	int offset;
+	char * str = malloc(sizeof(char));
+
+	while(elf->a_shdr[i].sh_type =!SHT_STRTAB){
+		i++;
+	}
+	offset = elf->a_shdr[i].sh_offset;
+	fseek(elf->elf_file,offset+elf->a_shdr[numero].sh_name,SEEK_SET);
+
+	int cpt = 1;
+	while ((c = fgetc(elf->elf_file)) != '\n' && c != EOF){
+		str = realloc(str, sizeof(char)*cpt);
+		str = c;
+		cpt++;
+	}
+	return str;
+
+}
 /************************************/
 char* case_flags(Elf32_Word flag) {
     switch(flag) {
