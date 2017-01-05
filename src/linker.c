@@ -9,40 +9,87 @@
 #include "util.h"
 
 
-void affichageComplet(ELF_STRUCT* elf_struct) {
-	display_header(elf_struct->elf_header);
-	Affichage_section(elf_struct);
-	printf("Suite en cours");
-	//affichage de la suite
+void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	//à compléter	
+	if (elf_struct2 == NULL) {
+		display_header(elf_struct1->elf_header);
+		Affichage_section(elf_struct1);
+		printf("Suite en cours");
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			printf("\nQuel fichier ? (numéro)\n");
+			scanf("%d",&choix);
+			if (choix == 1) {
+				display_header(elf_struct1->elf_header);
+				Affichage_section(elf_struct1);
+				printf("Suite en cours");
+			} else {
+				display_header(elf_struct2->elf_header);
+				Affichage_section(elf_struct2);
+				printf("Suite en cours");
+			}
+		}
+	}
 }
 
-void affichageHeader(ELF_STRUCT* elf_struct) {
-	display_header(elf_struct->elf_header);
+void affichageHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	if (elf_struct2 == NULL) {
+		display_header(elf_struct1->elf_header);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			printf("\nQuel fichier ? (numéro)\n");
+			scanf("%d",&choix);
+			if (choix == 1) {
+				display_header(elf_struct1->elf_header);
+			} else {
+				display_header(elf_struct2->elf_header);
+			}
+		}
+	}
 }
 
-void affichageSectionHeader(ELF_STRUCT* elf_struct) {
-	Affichage_section(elf_struct);
+void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	if (elf_struct2 == NULL) {
+		Affichage_section(elf_struct1);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			printf("\nQuel fichier ? (numéro)\n");
+			scanf("%d",&choix);
+			if (choix == 1) {
+				Affichage_section(elf_struct1);
+			} else {
+				Affichage_section(elf_struct2);
+			}
+		}
+	}
 }
 
-void affichageContenuSection(ELF_STRUCT* elf_struct) {
+void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	//CHOIX DE LA SECTION A AFFICHER
 	//affichage contenu de section
 	printf("En cours");
 }
 
-void affichageSymbole(ELF_STRUCT* elf_struct) {
+void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	//affichage table symbole
 	printf("En cours");
 }
 
-void affichageReimplementation(ELF_STRUCT* elf_struct) {
+void affichageReimplementation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2t) {
 	//affichage de la table de réimplémentation
 	printf("En cours");
 }
 
 void fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	if (elf_struct2 == NULL) {
+		printf("Un seul fichier en argument, fusion impossible.\n");
+	} else {
 	//FUSION
 	printf("FUUUUUU-SION");
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -113,84 +160,36 @@ int main(int argc, char *argv[]) {
 		scanf("%d",&choix);
 		switch(choix) {
 			case 1:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageComplet(elf_struct1);
-					else
-						affichageComplet(elf_struct2);
-
-				}
+				affichageComplet(elf_struct1, elf_struct2);
 			break;
 			case 2:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageHeader(elf_struct1);
-					else
-						affichageHeader(elf_struct2);
-				}
+				affichageHeader(elf_struct1, elf_struct2);
 			break;
 			case 3:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageSectionHeader(elf_struct1);
-					else
-						affichageSectionHeader(elf_struct2);
-				}
+				affichageSectionHeader(elf_struct1, elf_struct2);
 			break;
 			case 4:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageContenuSection(elf_struct1);
-					else
-						affichageContenuSection(elf_struct2);
-				}
+				affichageContenuSection(elf_struct1, elf_struct2);
 			break;
 			case 5:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageSymbole(elf_struct1);
-					else
-						affichageSymbole(elf_struct2);
-				}
+				affichageSymbole(elf_struct1, elf_struct2);
 			break;
 			case 6:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageReimplementation(elf_struct1);
-					else
-						affichageReimplementation(elf_struct2);
-				}
+				affichageReimplementation(elf_struct1, elf_struct2);
 			break;
 			case 7:
-				if (deuxF == 0)
-					printf("Un seul fichier en argument, fusion impossible.\n");
-				else
-					fusion(elf_struct1, elf_struct2);
+				fusion(elf_struct1, elf_struct2);
+			break;
+			case 8:
+				printf("Fermeture du programme\n");
 			break;
 		}
 	}
 
 	// Sortie propre
 	close_elf_struct(elf_struct1);
-	close_elf_struct(elf_struct2);
+	if (deuxF)
+		close_elf_struct(elf_struct2);
 
 	return EXIT_SUCCESS;
 
