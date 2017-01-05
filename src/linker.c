@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "global_struct.h"
-#include "gestion_elf.h"
+#include "init.h"
 #include "header_elf.h"
 #include "linker.h"
 #include "section_header.h"

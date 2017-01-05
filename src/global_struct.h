@@ -20,7 +20,6 @@ typedef struct ELF_STRUCT {
 	unsigned char **sections_content;
 	char *a_section_names;
 	int str_table_idx;
-	int symb_table_idx;
 	int error_code; 
 
 } ELF_STRUCT;
