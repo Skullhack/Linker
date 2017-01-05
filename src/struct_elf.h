@@ -19,7 +19,6 @@ typedef struct ELF_STRUCT {
 	Elf32_Rela *a_rela;
 	unsigned char **sections_content;
 	char *a_section_names;
-	int nb_sections;
 	int str_table_idx;
 	int symb_table_idx;
 	int error_code; 

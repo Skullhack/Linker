@@ -5,11 +5,13 @@
 #include "gestion_elf.h"
 #include "header_elf.h"
 #include "linker.h"
+#include "section_header.h"
 #include "util.h"
 
 
 void affichageComplet(ELF_STRUCT* elf_struct) {
 	display_header(elf_struct->elf_header);
+	Affichage_section(elf_struct);
 	printf("Suite en cours");
 	//affichage de la suite
 }
@@ -19,8 +21,7 @@ void affichageHeader(ELF_STRUCT* elf_struct) {
 }
 
 void affichageSectionHeader(ELF_STRUCT* elf_struct) {
-	//affichage section header
-	printf("En cours");
+	Affichage_section(elf_struct);
 }
 
 void affichageContenuSection(ELF_STRUCT* elf_struct) {

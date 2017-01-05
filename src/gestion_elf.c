@@ -3,8 +3,8 @@
 #include "struct_elf.h"
 #include "gestion_elf.h"
 #include "header_elf.h"
-/*#include "elf_section_header.h"
-#include "elf_symbol_table.h"
+#include "section_header.h"
+/*#include "elf_symbol_table.h"
 #include "elf_relocate.h"
 #include "elf_section_content.h"*/
 
@@ -19,7 +19,7 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 	// Init file
 	elf_struct->elf_file = elf_file;
 	
-	// Allocates memory + init header 
+	// Charge le header dans la structure
 	elf_struct->elf_header = malloc( sizeof(Elf32_Ehdr) );
 	if (elf_struct->elf_header == NULL) {
 		elf_struct->error_code = ERROR_MALLOC_HEADER;
@@ -29,22 +29,19 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 		elf_struct->error_code = ERROR_READ_HEADER;
 		return -1;
 	}
-	/*
-	// Now that elf_header is initialized, we have the number of sections 
-	elf_struct->nb_sections = elf_struct->elf_header->e_shnum;
 	
-	// Allocates memory + init shdr
-	elf_struct->a_shdr = malloc ( sizeof (Elf32_Shdr) * elf_struct->nb_sections );
+	// Charge les section headers
+	elf_struct->a_shdr = malloc ( sizeof (Elf32_Shdr) * elf_struct->elf_header->e_shnum );
 	if (elf_struct->a_shdr == NULL) {
 		elf_struct->error_code = ERROR_MALOC_A_SHDR;
 		return -1;
 	}
-	if ( fill_shdr_array(elf_struct) == -1 ) {
+	if ( header_section(elf_struct) == -1 ) {
 		elf_struct->error_code = ERROR_FILL_A_SHDR;
 		return -1;
 	}
 
-
+	/*
 	// Now that a_shdr is initialized, we have the content of the sections
 	// We need the total size of the content
 	for (i = 0; i < elf_struct->elf_header->e_shnum; i++) {
@@ -122,11 +119,10 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 void close_elf_struct(ELF_STRUCT* elf_struct) {
 
 	//int i;
-	//int nb_sections = elf_struct->elf_header->e_shnum;
 
 	if (elf_struct->elf_header != NULL) free(elf_struct->elf_header);
-	/*if (elf_struct->a_shdr != NULL) free(elf_struct->a_shdr);
-	if (elf_struct->a_sym != NULL) free(elf_struct->a_sym);
+	if (elf_struct->a_shdr != NULL) free(elf_struct->a_shdr);
+	/*if (elf_struct->a_sym != NULL) free(elf_struct->a_sym);
 	for (i = 0; i < nb_sections; i++) {
 		if (elf_struct->sections_content[i] != NULL) {
 			free(elf_struct->sections_content[i]);
