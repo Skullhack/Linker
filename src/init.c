@@ -4,20 +4,20 @@
 #include "init.h"
 #include "header_elf.h"
 #include "section_header.h"
-#include "table_symbole.h"
+//#include "table_symbole.h"
 /*#include "elf_relocate.h"
 #include "elf_section_content.h"*/
 
 int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 
-	int idx_tab_sym = 0;
-	int nb_sym;
+	//int idx_tab_sym = 0;
+	//int nb_sym;
 	/*int size_rel = 0;
 	int size_rela = 0;
 	int total_size_sections_content = 0;
 	int i = 0;*/
 
-	// Init file
+	// Initialise le fichier
 	elf_struct->elf_file = elf_file;
 	
 	// Charge le header dans la structure
@@ -60,7 +60,7 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 			return -1;
 		}
 	}*/
-
+/*
 	//Récupère le nombre de symboles
 	while(idx_tab_sym < elf_struct->elf_header->e_shnum && elf_struct->a_shdr[idx_tab_sym].sh_type != 2){
 		idx_tab_sym += 1;	
@@ -77,7 +77,7 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 	if ( creer_table_symbole(elf_struct) == -1 ) {
 		elf_struct->error_code = ERROR_FILL_A_SHDR;
 		return -1;
-	}
+	}*/
 	/*
 
 	
