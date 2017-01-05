@@ -15,13 +15,13 @@ int creer_table_symbole(ELF_STRUCT * elf){
 	int nb_symb;
 	
 	//On obtient le numero de l'entete de section de la table des symboles 
-	while(i < elf.elf_header->e_shnum && elf.a_shdr[i]->sh_type != 2){
+	while(i < elf->elf_header->e_shnum && elf->a_shdr[i].sh_type != 2){
 		i += 1;	
 	}
 	
-	if(i < elf.elf_header->e_shnum){
-		taille_tab_symb=elf.a_shdr[i]->sh_size;	
-		adr_tab_symb=elf.a_shdr[i]->sh_offset;		
+	if(i < elf->elf_header->e_shnum){
+		taille_tab_symb=elf->a_shdr[i].sh_size;	
+		adr_tab_symb=elf->a_shdr[i].sh_offset;		
 	}	
 	else{ 
 		return -1;
@@ -35,30 +35,42 @@ int creer_table_symbole(ELF_STRUCT * elf){
 	
 	// We read the symbole table one by one	
 	for (i=0; i<nb_symb;i++){
-   		if ( fread(&(elf.*a_sym[i]), sizeof(Elf32_Sym), 1, elf->elf_file) == -1 ) {
+   		if ( fread(&(elf->a_sym[i]), sizeof(Elf32_Sym), 1, elf->elf_file) == -1 ) {
         	return -1;
     	}
     }    
     
     // big endian / little endian
-    reverse_needed = need_reverse( elf.elf_header->e_ident[EI_DATA] );
+    reverse_needed = need_reverse( elf->elf_header->e_ident[EI_DATA] );
 
     if (reverse_needed) {    
     	for (i=0; i<nb_symb;i++){
-		    elf.a_sym[i]->st_name = reverse_4(elf.a_sym[i]->st_name);
-		    elf.a_sym[i]->st_value = reverse_4(elf.a_sym[i]->st_value);
-		    elf.a_sym[i]->st_size = reverse_4(elf.a_sym[i]->st_size);
-		    elf.a_sym[i]->st_shndx = reverse_2(elf.a_sym[i]->st_shndx);		    
+		    elf->a_sym[i].st_name = reverse_4(elf->a_sym[i].st_name);
+		    elf->a_sym[i].st_value = reverse_4(elf->a_sym[i].st_value);
+		    elf->a_sym[i].st_size = reverse_4(elf->a_sym[i].st_size);
+		    elf->a_sym[i].st_shndx = reverse_2(elf->a_sym[i].st_shndx);		    
 		}
     }
 
 	return 1;	
 }
 
-void afficher_table(Elf32_Sym tab_symb){
+void afficher_table(ELF_STRUCT * elf){
+	int i=0;
+	int taille_tab_symb;
+	int nb_symb;
 	
-	for (i=0; i<nb_symb;i++){	
-		printf("Le st_name de la table des symboles %d est : %d\n", elf.a_sym[i]->st_name);	
+	while(i < elf->elf_header->e_shnum && elf->a_shdr[i].sh_type != 2){
+		i += 1;	
 	}
 	
+	if(i < elf->elf_header->e_shnum){
+		taille_tab_symb=elf->a_shdr[i].sh_size;	
+	}
+	
+	nb_symb = taille_tab_symb / sizeof(Elf32_Sym);
+	
+	for (i=0; i<nb_symb;i++){	
+		printf("Le st_name de la table des symboles %d est : %d\n", i, elf->a_sym[i].st_name);	
+	}	
 }
