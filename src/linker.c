@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <errno.h>
 #include <stdio.h>
+#include <stddef.h>
 
 #include "global_struct.h"
 #include "init.h"
@@ -7,6 +9,25 @@
 #include "linker.h"
 #include "section_header.h"
 #include "util.h"
+
+//A DEMAIN
+//NTM
+
+int GetInteger(const char *prompt, int *i) {
+	int Invalid = 0;
+	int EndIndex;
+	char buffer[100];
+	do {
+		if (Invalid)
+			fputs("Entrez un chiffre de 1 à 8.\n\n", stdout);
+		Invalid = 1;
+		fputs(prompt, stdout);
+		if (NULL == fgets(buffer, sizeof(buffer), stdin))
+			return 1;
+		errno = 0;
+	} while ((1 != sscanf(buffer, "%d %n", i, &EndIndex)) || buffer[EndIndex] || errno);
+	return 0;
+}
 
 
 void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
@@ -145,7 +166,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct1));
 		return EXIT_FAILURE;
 	}
-
+	
+	choix = 0;
 	while (choix != 8) {
 		printf("\nMenu principal\n");
 		printf("--------------------------------------------------\n");
@@ -157,7 +179,7 @@ int main(int argc, char *argv[]) {
 		printf("6 = afficher la table de réimplémentation\n");
 		printf("7 = effectuer la fusion des fichiers objets donnés\n");
 		printf("8 = quitter le programme\n\n");
-		scanf("%d",&choix);
+		GetInteger("Choisissez une option : \n", &choix);
 		switch(choix) {
 			case 1:
 				affichageComplet(elf_struct1, elf_struct2);
@@ -182,6 +204,9 @@ int main(int argc, char *argv[]) {
 			break;
 			case 8:
 				printf("Fermeture du programme\n");
+			break;
+			default:
+				printf("Entrez un chiffre de 1 à 8.\n\n");
 			break;
 		}
 	}
