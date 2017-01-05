@@ -1,6 +1,7 @@
 #include <elf.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "section_header.h"
 #include "util.h"
 #include "global_struct.h"
 
@@ -38,7 +39,7 @@ void Affichage_section(ELF_STRUCT * elf ){
 	for(int i = 0; i <  elf->elf_header->e_shnum; i++){
 
 		printf(" Numero de section : %d\n",i);
-		printf(" Nom de la section : %x\n",elf->a_shdr[i].sh_name);
+		get_name(elf,elf->a_shdr[i].sh_name,i);
 		printf(" Taille de la section: %x\n",elf->a_shdr[i].sh_size);
 		printf(" Type : %s\n",case_type(elf->a_shdr[i].sh_type));
 		printf(" Flag : %s\n",case_flags(elf->a_shdr[i].sh_flags));
@@ -47,30 +48,25 @@ void Affichage_section(ELF_STRUCT * elf ){
 		printf(" Lien : %x\n",elf->a_shdr[i].sh_link);
 		printf(" Info : %x\n",elf->a_shdr[i].sh_info);
 		printf(" Adresse ligne : %x\n",elf->a_shdr[i].sh_addralign);
-		printf(" Taille d'une entree : %x\n",elf->a_shdr[i].sh_entsize);	
+		printf(" Taille d'une entree : %x\n",elf->a_shdr[i].sh_entsize);
 	}
 }
 /************************************/
-char* get_name(ELF_STRUCT * elf,Elf32_Word name ,int numero){
+void get_name(ELF_STRUCT * elf,Elf32_Word name ,int numero){
 
-	int i = 0;
-	int offset;
-	char * str = malloc(sizeof(char));
+	int offset = (int) elf->a_shdr[elf->elf_header->e_shstrndx].sh_offset;
 
-	while(elf->a_shdr[i].sh_type =!SHT_STRTAB){
-		i++;
-	}
-	offset = elf->a_shdr[i].sh_offset;
 	fseek(elf->elf_file,offset+elf->a_shdr[numero].sh_name,SEEK_SET);
 
+	char c;
 	int cpt = 1;
-	while ((c = fgetc(elf->elf_file)) != '\n' && c != EOF){
-		str = realloc(str, sizeof(char)*cpt);
-		str = c;
+	while ( (c = fgetc(elf->elf_file)) != '\0') {
 		cpt++;
 	}
-	return str;
+	char str[cpt];
+	fgets(str,cpt,elf->elf_file);
 
+	printf("Nom de la section : %s \n",str);
 }
 /************************************/
 char* case_flags(Elf32_Word flag) {
