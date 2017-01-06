@@ -33,7 +33,7 @@ void afficher_type(unsigned char st_info){
 			printf("Type : HIPROC\n");
 			break;
 		default: 
-		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BananeGuimauve.\n");
+		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BatmanGuimauve.\n");
 	}
 }
 
@@ -58,7 +58,44 @@ void afficher_bind(unsigned char st_info){
 		 	printf("Bind : HIPROC\n");
 			break;
 		default: 
-		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BATMAN.\n");
+		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BatmanGuimauve.\n");
+	}
+}
+
+void afficher_vis(unsigned char st_other){
+
+	switch(st_other){
+		case 0 :
+		 	printf("Vis : DEFAULT\n");
+		 	break;
+		case 1 :
+		 	printf("Vis : INTERNAL\n");
+			break;
+		case 2 :
+		 	printf("Vis : HIDDEN\n");
+			break;			 
+		case 3 :
+		 	printf("Vis : PROTECTED\n");
+			break;
+		default: 
+		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BatmanGuimauve.\n");
+	}
+}
+
+void afficher_ndx(Elf32_Section st_shndx){
+
+	switch(st_shndx){
+		case 0 :
+		 	printf("Ndx : UND\n");
+		 	break;
+		case 65521 :
+		 	printf("Ndx : ABS\n");
+			break;
+		case 65522 :
+		 	printf("Ndx : COM\n");
+			break;
+		default:
+			printf("Ndx : %d\n", st_shndx);
 	}
 }
 
@@ -177,8 +214,8 @@ void afficher_table(ELF_STRUCT * elf){
 		printf("Size : %d\n", elf->a_sym[i].st_size);		
 		afficher_type(elf->a_sym[i].st_info);
 		afficher_bind(elf->a_sym[i].st_info);
-		printf("Vis : DEFAULT\n");
-		printf("Ndx : %d\n", elf->a_sym[i].st_shndx);
+		afficher_vis(elf->a_sym[i].st_other);
+		afficher_ndx(elf->a_sym[i].st_shndx);
 		
 		//Affichage du nom
 		//Si la valeur de l'indice/st_name du symbole est nulle, il n'a pas de nom
