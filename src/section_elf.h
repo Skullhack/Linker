@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <elf.h>
 #include <stdio.h>
-#include "struct_elf.h"
+#include "global_struct.h"
 
 /*
 Affiche la section indiqué en paramètre par le "id". Il peut etre soit un nombre soit un nom de section
