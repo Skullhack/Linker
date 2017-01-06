@@ -40,19 +40,20 @@ void Affichage_section(ELF_STRUCT * elf ){
 	printf("║                                 \e[1;31mEn-tête de section :\e[0m                                  ║\n");
 	printf("╟─────┬─────────────────┬───────────────┬─────────┬───────┬───────┬───┬────┬───┬────┬───╢\n");
 	printf("║%-5s│%-17s│%-15s│%-9s│%-7s│%-7s│%-3s│%-4s│%-3s│%-4s│%-3s║\n","[Nr]","Nom","Type","Adr","Offset","Taille","ES","Flg","LN","Inf","Al");
+	printf("╟─────┼─────────────────┼───────────────┼─────────┼───────┼───────┼───┼────┼───┼────┼───╢\n");
 	for(int i = 0; i <  elf->elf_header->e_shnum; i++){
 		printf("║  %-3d",i);
 		get_name(elf,elf->a_shdr[i].sh_name,i);
 		printf("│%-15s",case_type(elf->a_shdr[i].sh_type));
-		printf("│%-9x",elf->a_shdr[i].sh_addr);
-		printf("│%-7x",elf->a_shdr[i].sh_offset);
-		printf("│%-7x",elf->a_shdr[i].sh_size);
-		printf("│%-3x",elf->a_shdr[i].sh_entsize);
+		printf("│%-9.8x",elf->a_shdr[i].sh_addr);
+		printf("│%-7.6x",elf->a_shdr[i].sh_offset);
+		printf("│%-7.6x",elf->a_shdr[i].sh_size);
+		printf("│%-3.2x",elf->a_shdr[i].sh_entsize);
 		case_flags(elf->a_shdr[i].sh_flags);
 
-		printf("│%-3x",elf->a_shdr[i].sh_link);
-		printf("│%-4x",elf->a_shdr[i].sh_info);
-		printf("│%-3x║\n",elf->a_shdr[i].sh_addralign);
+		printf("│%3x",elf->a_shdr[i].sh_link);
+		printf("│%4x",elf->a_shdr[i].sh_info);
+		printf("│%3x║\n",elf->a_shdr[i].sh_addralign);
 	}
 	printf("╚═════╧═════════════════╧═══════════════╧═════════╧═══════╧═══════╧═══╧════╧═══╧════╧═══╝\n");
 	printf("\nClés des Flags :");

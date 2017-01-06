@@ -83,21 +83,43 @@ void tab_Reimplantation(ELF_STRUCT * elf){
 }
 
 void Affichage_Rel(ELF_STRUCT * elf){
-	for(int i = 0; i < elf->taille_rel;i++){
-
-		printf("Offset %x\n",elf->a_rel[i].r_offset);
-		printf("Info %x\n",elf->a_rel[i].r_info);
-		printf("Sym : %x\n",ELF32_R_SYM(elf->a_rel[i].r_info));
-		printf("Type : %d\n",ELF32_R_TYPE(elf->a_rel[i].r_info));
-		//printf("Sym : %s",ELF32_R_INFO(elf->a_rel[i].r_info);
+	if (elf->taille_rel==0){
+		printf("Aucne table de Rel\n");
+	}else{
+		printf("╔═══════════════════════════════════════════════╗\n");
+		printf("║               \e[1;31mTable des Rel :\e[0m                 ║\n");
+		printf("╟─────────┬─────────┬────────────────────┬──────╢\n");
+		printf("║%-10s│%-9s│%-20s│%-6s║\n","Décalage","Info","Type","Index");
+		printf("╟─────────┼─────────┼────────────────────┼──────╢\n");
+	
+		for(int i = 0; i < elf->taille_rel;i++){
+		
+			printf("║%9.8x│",elf->a_rel[i].r_offset);
+			printf("%9.8x│",elf->a_rel[i].r_info);
+			printf("%-20d│",ELF32_R_TYPE(elf->a_rel[i].r_info));
+			printf("%-6x║\n",ELF32_R_SYM(elf->a_rel[i].r_info));
+		}
+		printf("╚═════════╧═════════╧════════════════════╧══════╝\n");
 	}
 }
 
 
 void Affichage_Rela(ELF_STRUCT * elf){
-	for(int i = 0; i < elf->taille_rela;i++){
-		printf("Offset %x\n",elf->a_rela[i].r_offset);
-		printf("Info %d\n",elf->a_rela[i].r_info);
-		printf("Adresse %x\n",elf->a_rela[i].r_addend);
+
+	if (elf->taille_rela==0){
+		printf("Aucne table de Rela\n");
+	}else{
+		printf("╔══════════════════════════════════════════════════╗\n");
+		printf("║                \e[1;31mTable des Rela :\e[0m                  ║\n");
+		printf("╟─────────┬─────────┬────────────────────┬─────────╢\n");
+		printf("║%-10s│%-9s│%-20s│%-9s║\n","Décalage","Info","Type","Adresse");
+		printf("╟─────────┼─────────┼────────────────────┼─────────╢\n");
+		for(int i = 0; i < elf->taille_rela;i++){
+			printf("║%9.8x\n",elf->a_rela[i].r_offset);
+			printf("%9.8d\n",elf->a_rela[i].r_info);
+			printf("%-20d\n",ELF32_R_TYPE(elf->a_rela[i].r_info));
+			printf("%9.8x\n",elf->a_rela[i].r_addend);
+		}
+		printf("╚═════════╧═════════╧════════════════════╧═════════╝\n");
 	}
 }

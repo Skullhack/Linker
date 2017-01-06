@@ -6,96 +6,93 @@
 #include "util.h"
 #include "global_struct.h"
 
-void afficher_type(unsigned char st_info){
+char* afficher_type(unsigned char st_info){
 	
 	st_info = st_info & 0xf;
-	
 	switch(st_info){
 		case 0 :
-		 	printf("Type : NOTYPE\n");
+		 	return "NOTYPE";
 		 	break;
 		case 1 :
-		 	printf("Type : OBJECT\n");
+		 	return "OBJECT";
 			break;
 		case 2 :
-		 	printf("Type : FUNC\n");
+		 	return "FUNC";
 			break;			 
 		case 3 :
-		 	printf("Type : SECTION\n");
+		 	return "SECTION";
 			break;			 
 		case 4 :
-		 	printf("Type : FILE\n");
+		 	return "FILE";
 			break;			 
 		case 13 :
-		 	printf("Type : LOPROC\n");
+		 	return "LOPROC";
 			break;			 
 		case 15 :
-			printf("Type : HIPROC\n");
+			return "HIPROC";
 			break;
 		default: 
-		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BatmanGuimauve.\n");
+		 	return "UNDEF";
 	}
 }
 
-void afficher_bind(unsigned char st_info){
+char* afficher_bind(unsigned char st_info){
 	
 	st_info = st_info >> 4;
 	
 	switch(st_info){
 		case 0 :
-		 	printf("Bind : LOCAL\n");
+		 	return "LOCAL";
 		 	break;
 		case 1 :
-		 	printf("Bind : GLOBAL\n");
+		 	return "GLOBAL";
 			break;
 		case 2 :
-		 	printf("Bind : WEAK\n");
+		 	return "WEAK";
 			break;			 
 		case 13 :
-		 	printf("Bind : LOPROC\n");
+		 	return "LOPROC";
 			break;			 
 		case 15 :
-		 	printf("Bind : HIPROC\n");
+		 	return "HIPROC";
 			break;
 		default: 
-		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BatmanGuimauve.\n");
+		 	return " ";
 	}
 }
 
-void afficher_vis(unsigned char st_other){
-
+char* afficher_vis(unsigned char st_other){
 	switch(st_other){
 		case 0 :
-		 	printf("Vis : DEFAULT\n");
+		 	return "DEFAULT";
 		 	break;
 		case 1 :
-		 	printf("Vis : INTERNAL\n");
+		 	return "INTERNAL";
 			break;
 		case 2 :
-		 	printf("Vis : HIDDEN\n");
+		 	return "HIDDEN";
 			break;			 
 		case 3 :
-		 	printf("Vis : PROTECTED\n");
+		 	return "PROTECTED";
 			break;
 		default: 
-		 	printf("Il y a une erreur quelque part...\n Veuillez corriger l'erreur à ma place.\n Cordialement BatmanGuimauve.\n");
+		 	return " ";
 	}
 }
 
 void afficher_ndx(Elf32_Section st_shndx){
-
 	switch(st_shndx){
 		case 0 :
-		 	printf("Ndx : UND\n");
+		 	printf("%-4s","UND");
 		 	break;
 		case 65521 :
-		 	printf("Ndx : ABS\n");
+		 	printf("%-4s","ABS");
 			break;
 		case 65522 :
-		 	printf("Ndx : COM\n");
+		 	printf("%-4s","COM");
 			break;
 		default:
-			printf("Ndx : %d\n", st_shndx);
+			printf("%-4d", st_shndx);
 	}
 }
 
@@ -205,22 +202,28 @@ void afficher_table(ELF_STRUCT * elf){
 	//Le nombre de symboles = la taille de la table des symboles / la taille de la structures d'un seul symbole
 	nb_symb = taille_tab_symb / sizeof(Elf32_Sym);
 	
+	printf("╔══════════════════════════════════════════════════════════════════════════════════════╗\n");
+    printf("║                                \e[1;31mTable des symboles:\e[0m                                   ║\n");
+    printf("╟────┬─────────┬───────┬────────┬───────┬──────────┬────┬──────────────────────────────╢\n");
+    printf("║%-4s│%-9s│%-7s│%-8s│%-7s│%-10s│%-4s│%-30s║\n","Num","Valeur","Taille","Type","Lien","Visible","Ndx","Nom");
+    printf("╟────┼─────────┼───────┼────────┼───────┼──────────┼────┼──────────────────────────────╢\n");
+    
 	//On parcours la structure de chaque symbole
 	for (i=0; i<nb_symb;i++){
-	
-		//Affichage de toutes les variables de la structure du symbole sauf le nom
-		printf("Num : %d\n", i);
-		printf("Value : %.8x\n", elf->a_sym[i].st_value);
-		printf("Size : %d\n", elf->a_sym[i].st_size);		
-		afficher_type(elf->a_sym[i].st_info);
-		afficher_bind(elf->a_sym[i].st_info);
-		afficher_vis(elf->a_sym[i].st_other);
-		afficher_ndx(elf->a_sym[i].st_shndx);
 		
+		//Affichage de toutes les variables de la structure du symbole sauf le nom
+		printf("║%-4d│", i);
+		printf("%-9.8x│", elf->a_sym[i].st_value);
+		printf("%-7d│", elf->a_sym[i].st_size);		
+		printf("%-8s│",afficher_type(elf->a_sym[i].st_info));
+		printf("%-7s│",afficher_bind(elf->a_sym[i].st_info));
+		printf("%-10s│",afficher_vis(elf->a_sym[i].st_other));
+		afficher_ndx(elf->a_sym[i].st_shndx);
+		printf("│");
 		//Affichage du nom
 		//Si la valeur de l'indice/st_name du symbole est nulle, il n'a pas de nom
 		if(elf->a_sym[i].st_name == 0){
-			printf("Name : Le symbole n'a aucun nom\n\n");
+			printf("%-30s║\n","");
 		}
 		//Sinon il en possède un et on l'affiche
 		else{
@@ -240,7 +243,10 @@ void afficher_table(ELF_STRUCT * elf){
 				//printf("le caractère est : %c\n", symb_name[j]);			
 			}while(symb_name[j] != '\0');
 			
-			printf("Name : %s\n\n", symb_name);
+			printf("%-30s║\n", symb_name);
 		}		
+		
 	}
+	printf("╚════╧═════════╧═══════╧════════╧═══════╧══════════╧════╧══════════════════════════════╝\n");
+	
 }
