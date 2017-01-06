@@ -18,67 +18,67 @@ int display_header(Elf32_Ehdr *elf_header) {
         || elf_header->e_ident[EI_MAG3] != ELFMAG3
         || elf_header->e_ident[EI_CLASS] != ELFCLASS32)
     {
-        fprintf(stderr, "Could not print header: not a 32bits elf file\n");
+        fprintf(stderr, "Affichage impossible: le fichier n'est pas de type elf 32bits\n");
         return -1;
     }
 
     // Start print header
-    printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-    printf("║                                             \e[1;31mELF header:\e[0m                                                ║\n");
-    printf("╠════════════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
-    printf("║ Magic number:%-42s", "");
+    printf("╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    printf("║                                              \e[1;31mEn-tête ELF:\e[0m                                                 ║\n");
+    printf("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    printf("║ Nombre magique:%-43s", "");
     for (i = 0; i < EI_NIDENT; i++) {
         printf("%2.2x ", elf_header->e_ident[i]);
     }
-    printf("║\n╟────────────────────────────────────────────────────────┬───────────────────────────────────────────────╢\n");
+    printf("║\n╟────────────────────────────────────────────────────────┬──────────────────────────────────────────────────╢\n");
 
-    printf("║ File Class:  %-41s │ %-46s║\n", "", get_file_class(elf_header->e_ident[EI_CLASS]));
+    printf("%-58s │ %-49s║\n", "║ Classe de fichier:", get_file_class(elf_header->e_ident[EI_CLASS]));
 
-    printf("║ Data encoding:  %-38s │ %-46s║\n", "", get_data_encoding(elf_header->e_ident[EI_DATA]));
+    printf("%-58s   │ %-49s║\n", "║ Données encodées:", get_data_encoding(elf_header->e_ident[EI_DATA]));
 
-    printf("║ ELF header version number:  %-26s │ %-46s║\n", "", get_header_version(elf_header->e_ident[EI_VERSION]));
+    printf("%-58s  │ %-49s║\n", "║ Version de l'en-tête ELF:", get_header_version(elf_header->e_ident[EI_VERSION]));
 
-    printf("║ Operating system:  %-35s │ %-46s║\n", "", get_operating_system(elf_header->e_ident[EI_OSABI]));
+    printf("%-58s │ %-49s║\n", "║ Systeme d'exploitation:", get_operating_system(elf_header->e_ident[EI_OSABI]));
 
-    printf("║ ABI Version :  %-39s │ %-46d║\n", "", elf_header->e_ident[EI_ABIVERSION]);
+    printf("%-58s │ %-49d║\n", "║ Version de l'ABI :", elf_header->e_ident[EI_ABIVERSION]);
 
-    printf("║ Object file type:  %-35s │ %-46s║\n", "", get_object_file_type(elf_header->e_type));
+    printf("%-58s │ %-49s║\n", "║ Type de fichier objet:", get_object_file_type(elf_header->e_type));
 
-    printf("║ Required architecture (machine):  %-20s │ %-46s║\n", "", get_architecture(elf_header->e_machine));
+    printf("%-58s │ %-49s║\n", "║ Architecture requise (machine):", get_architecture(elf_header->e_machine));
 
-    printf("║ Object file version:   %-31s │ %-46s║\n", "", get_object_file_version(elf_header->e_version));
+    printf("%-58s │ %-49s║\n", "║ Version des fichiers objets:", get_object_file_version(elf_header->e_version));
 
-    printf("║ Entry point:  %-40s │ ", "");
-    if (elf_header->e_entry == 0) printf("No associated entry point (0x%x)               ║\n", elf_header->e_entry);
-    else printf("%#-48x║\n", elf_header->e_entry);
+    printf("%-58s  │ ", "║ Adresse du point d'entrée:");
+    if (elf_header->e_entry == 0) printf("Aucune adresse du point d'entrée assossicée (0x%x)║\n", elf_header->e_entry);
+    else printf("%#-49x║\n", elf_header->e_entry);
 
-    printf("║ Program header table's file offset (bytes):  %-9s │ ", "");
-    if (elf_header->e_phoff == 0) printf("0 (No program header table)                   ║\n");
-    else printf("%-48d║\n", elf_header->e_phoff);
+    printf("%-58s   │ ", "║ Début des en-têtes de programme (bytes):");
+    if (elf_header->e_phoff == 0) printf("%-49s ║\n","0 (Aucune table d'en-tête de programme)");
+    else printf("%-49d║\n", elf_header->e_phoff);
 
-    printf("║ Section header table's file offset (bytes):  %-9s │ ", "");
-    if (elf_header->e_shoff == 0) printf("0 (No section header table)           ║\n");
-    else printf("%-46d║\n", elf_header->e_shoff);
+    printf("%-58s   │ ", "║ Début des en-têtes de section (bytes):");
+    if (elf_header->e_shoff == 0) printf("%-49s ║\n","0 (Aucune table d'en-tête de section)");
+    else printf("%-49d║\n", elf_header->e_shoff);
 
-    printf("║ Flags:  %-46s │ %#-46x║\n", "", elf_header->e_flags);
+    printf("%-58s │ %#-49x║\n", "║ Flags:", elf_header->e_flags);
 
-    printf("║ ELF header's size (bytes):  %-26s │ %-46d║\n", "", elf_header->e_ehsize);
+    printf("%-58s  │ %-49d║\n", "║ Taille de l'en-tête ELF (bytes):", elf_header->e_ehsize);
 
-    printf("║ Size of one entry in the program header table (bytes): │ %-46d║\n", elf_header->e_phentsize);
+    printf("%-58s  │ %-49d║\n","║ Taille de l'en-tête du programme (bytes):", elf_header->e_phentsize);
 
-    printf("║ Number of entries in the program header table:         │ ");
-    if (elf_header->e_phnum == 0) printf("0 (No program header table)                   ║\n");
-    else printf("%-48d║\n", elf_header->e_phnum);
+    printf("%-58s  │ ","║ Nombre d'en-têtes du programme:");
+    if (elf_header->e_phnum == 0) printf("%-49s ║\n","0 (Aucune table d'en-tête de programme)");
+    else printf("%-49d║\n", elf_header->e_phnum);
 
-    printf("║ Size of one entry in the section header table (bytes): │ %-46d║\n", elf_header->e_shentsize);
+    printf("%-58s  │ %-49d║\n","║ Taille des en-têtes de section (bytes):", elf_header->e_shentsize);
 
-    printf("║ Number of entries in the section header table:         │ ");
-    if (elf_header->e_shnum == 0) printf("0 (No section header table)                ║\n");
-    else printf("%-46d║\n", elf_header->e_shnum);
+    printf("%-58s  │ ","║ Nombre d'entêtes de section:");
+    if (elf_header->e_shnum == 0) printf("%-49s ║\n","0 (Aucune table d'en-tête de section)");
+    else printf("%-49d║\n", elf_header->e_shnum);
 
-    printf("║ Section header table index:  %-25s │ %-46d║\n", "", elf_header->e_shstrndx);
+    printf("%-58s  │ %-49d║\n", "║ Table d'indexes d'en-tête de section:", elf_header->e_shstrndx);
     // End print header
-    printf("╚════════════════════════════════════════════════════════╧═══════════════════════════════════════════════╝\n");
+    printf("╚════════════════════════════════════════════════════════╧══════════════════════════════════════════════════╝\n");
     return 1;
  }
 
@@ -87,10 +87,8 @@ int read_header(ELF_STRUCT* elf_struct) {
     int reverse_needed;
     int header_size = sizeof(Elf32_Ehdr);
 
-    // Header is at the beginning of the file
     fseek(elf_struct->elf_file, 0, SEEK_SET);
 
-    // We read the whole header in one fread
     if ( fread(elf_struct->elf_header, header_size, 1, elf_struct->elf_file) == -1 ) {
         return -1;
     }

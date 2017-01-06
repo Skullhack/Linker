@@ -27,4 +27,4 @@ table_symbole.o: table_symbole.h global_struct.h util.h
 util.o: util.h
 
 clean:
-rm *.o linker program_header program_section_header program_table_symbole
+	rm *.o linker program_header program_section_header program_table_symbole
