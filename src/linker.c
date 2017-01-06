@@ -102,7 +102,7 @@ void fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		printf("Un seul fichier en argument, fusion impossible.\n");
 	} else {
-	//FUSION
+	//FUSION (petit dessin pour la soutenance) YOLOLOLO
 	printf("FUUUUUU-SION");
 	}
 }
