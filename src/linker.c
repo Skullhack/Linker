@@ -10,9 +10,6 @@
 #include "section_header.h"
 #include "util.h"
 
-//A DEMAIN
-//NTM
-
 int GetInteger(const char *prompt, int *i) {
 	int Invalid = 0;
 	int EndIndex;
@@ -39,8 +36,7 @@ void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
-			printf("\nQuel fichier ? (numéro)\n");
-			scanf("%d",&choix);
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
 				display_header(elf_struct1->elf_header);
 				Affichage_section(elf_struct1);
@@ -60,8 +56,7 @@ void affichageHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
-			printf("\nQuel fichier ? (numéro)\n");
-			scanf("%d",&choix);
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
 				display_header(elf_struct1->elf_header);
 			} else {
@@ -77,8 +72,7 @@ void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
-			printf("\nQuel fichier ? (numéro)\n");
-			scanf("%d",&choix);
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
 				Affichage_section(elf_struct1);
 			} else {
@@ -179,7 +173,7 @@ int main(int argc, char *argv[]) {
 		printf("6 = afficher la table de réimplémentation\n");
 		printf("7 = effectuer la fusion des fichiers objets donnés\n");
 		printf("8 = quitter le programme\n\n");
-		GetInteger("Choisissez une option : \n", &choix);
+		GetInteger("Entrez un chiffre proposé : \n", &choix);
 		switch(choix) {
 			case 1:
 				affichageComplet(elf_struct1, elf_struct2);
