@@ -5,6 +5,7 @@
 #include "header_elf.h"
 #include "section_header.h"
 #include "table_symbole.h"
+#include "reimplantation.h"
 /*#include "elf_relocate.h"
 #include "elf_section_content.h"*/
 
@@ -12,9 +13,7 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 
 	int idx_tab_sym = 0;
 	int nb_sym;
-	/*int size_rel = 0;
-	int size_rela = 0;
-	int total_size_sections_content = 0;
+	/*int total_size_sections_content = 0;
 	int i = 0;*/
 
 	// Initialise le fichier
@@ -95,28 +94,14 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 		fprintf(stderr, "Error while reading symbol table. Break.\n");
 		// error code
 		return -1;
-	}
+	}*/
 
-	//Relocation	
-	size_rel = get_rel_size(elf_struct);	
-	size_rela = get_rela_size(elf_struct);
-
-	elf_struct->a_rel = malloc( sizeof(Elf32_Rel) * size_rel );
-	elf_struct->a_rela = malloc( sizeof(Elf32_Rela) * size_rela );
-
-	if ( get_rela_table(elf_struct) == -1) {
-		printf("Error reading file to be relocated.\n");
-		return -1;
-	}
-
-	if ( get_rel_table(elf_struct) == -1) {
-		printf("Error reading file to be relocated.\n");
-		return -1;
-	}
+	//Réimplantation
+	tab_Reimplantation(elf_struct);
 	
 	// Init error code
 	elf_struct->error_code = 0;
-	*/	
+		
 
 	return 1;	
 

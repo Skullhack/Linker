@@ -8,6 +8,7 @@
 #include "header_elf.h"
 #include "linker.h"
 #include "section_header.h"
+#include "reimplantation.h"
 #include "util.h"
 
 int GetInteger(const char *prompt, int *i) {
@@ -93,9 +94,23 @@ void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	printf("En cours");
 }
 
-void affichageReimplementation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2t) {
-	//affichage de la table de réimplémentation
-	printf("En cours");
+void affichageReimplantation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	if (elf_struct2 == NULL) {
+		Affichage_Rel(elf_struct1);
+		Affichage_Rela(elf_struct1);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
+			if (choix == 1) {
+				Affichage_Rel(elf_struct1);
+				Affichage_Rela(elf_struct1);
+			} else {
+				Affichage_Rel(elf_struct2);
+				Affichage_Rela(elf_struct2);
+			}
+		}
+	}
 }
 
 void fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
@@ -160,38 +175,40 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct1));
 		return EXIT_FAILURE;
 	}
+
+	tab_Reimplantation(elf_struct1); //A VIRER
 	
 	choix = 0;
 	while (choix != 8) {
 		printf("\nMenu principal\n");
 		printf("--------------------------------------------------\n");
-		printf("1 = affichage complet des informations\n");
-		printf("2 = afficher le header\n");
-		printf("3 = afficher les headers de section\n");
-		printf("4 = afficher le contenu d'une section\n");
-		printf("5 = afficher la table des symboles\n");
-		printf("6 = afficher la table de réimplémentation\n");
+		printf("1 = afficher le header\n");
+		printf("2 = afficher les headers de section\n");
+		printf("3 = afficher le contenu d'une section\n");
+		printf("4 = afficher la table des symboles\n");
+		printf("5 = afficher la table de réimplantation\n");
+		printf("6 = affichage complet des informations\n");
 		printf("7 = effectuer la fusion des fichiers objets donnés\n");
 		printf("8 = quitter le programme\n\n");
 		GetInteger("Entrez un chiffre proposé : \n", &choix);
 		switch(choix) {
 			case 1:
-				affichageComplet(elf_struct1, elf_struct2);
-			break;
-			case 2:
 				affichageHeader(elf_struct1, elf_struct2);
 			break;
-			case 3:
+			case 2:
 				affichageSectionHeader(elf_struct1, elf_struct2);
 			break;
-			case 4:
+			case 3:
 				affichageContenuSection(elf_struct1, elf_struct2);
 			break;
-			case 5:
+			case 4:
 				affichageSymbole(elf_struct1, elf_struct2);
 			break;
+			case 5:
+				affichageReimplantation(elf_struct1, elf_struct2);
+			break;
 			case 6:
-				affichageReimplementation(elf_struct1, elf_struct2);
+				affichageComplet(elf_struct1, elf_struct2);
 			break;
 			case 7:
 				fusion(elf_struct1, elf_struct2);

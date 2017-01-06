@@ -9,6 +9,6 @@
 #include "global_struct.h"
 
 void tab_Reimplantation(ELF_STRUCT * elf);
-void Affichage_Rel(ELF_STRUCT * elf, int i);
-void Affichage_Rela(ELF_STRUCT * elf, int i);
+void Affichage_Rel(ELF_STRUCT * elf);
+void Affichage_Rela(ELF_STRUCT * elf);
 #endif

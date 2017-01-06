@@ -7,8 +7,6 @@
 #include "section_header.h"
 #include "util.h"
 
-#include "reimplantation.h"
-
 int main(int argc, char *argv[]) {
 
 	FILE *f = NULL;
@@ -37,10 +35,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	Affichage_section(elf_struct);
-
-	tab_Reimplantation(elf_struct);
-	Affichage_Rel(elf_struct,0);
-	//Affichage_Rela(elf_struct,0);
 
 	close_elf_struct(elf_struct);
 
