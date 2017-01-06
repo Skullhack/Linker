@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <errno.h>
 #include <stdio.h>
+#include <stddef.h>
 
 #include "global_struct.h"
 #include "init.h"
@@ -8,41 +10,107 @@
 #include "section_header.h"
 #include "util.h"
 
+//A DEMAIN
+//NTM
 
-void affichageComplet(ELF_STRUCT* elf_struct) {
-	display_header(elf_struct->elf_header);
-	Affichage_section(elf_struct);
-	printf("Suite en cours");
-	//affichage de la suite
+int GetInteger(const char *prompt, int *i) {
+	int Invalid = 0;
+	int EndIndex;
+	char buffer[100];
+	do {
+		if (Invalid)
+			fputs("Entrez un chiffre de 1 à 8.\n\n", stdout);
+		Invalid = 1;
+		fputs(prompt, stdout);
+		if (NULL == fgets(buffer, sizeof(buffer), stdin))
+			return 1;
+		errno = 0;
+	} while ((1 != sscanf(buffer, "%d %n", i, &EndIndex)) || buffer[EndIndex] || errno);
+	return 0;
 }
 
-void affichageHeader(ELF_STRUCT* elf_struct) {
-	display_header(elf_struct->elf_header);
+
+void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	//à compléter	
+	if (elf_struct2 == NULL) {
+		display_header(elf_struct1->elf_header);
+		Affichage_section(elf_struct1);
+		printf("Suite en cours");
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			printf("\nQuel fichier ? (numéro)\n");
+			scanf("%d",&choix);
+			if (choix == 1) {
+				display_header(elf_struct1->elf_header);
+				Affichage_section(elf_struct1);
+				printf("Suite en cours");
+			} else {
+				display_header(elf_struct2->elf_header);
+				Affichage_section(elf_struct2);
+				printf("Suite en cours");
+			}
+		}
+	}
 }
 
-void affichageSectionHeader(ELF_STRUCT* elf_struct) {
-	Affichage_section(elf_struct);
+void affichageHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	if (elf_struct2 == NULL) {
+		display_header(elf_struct1->elf_header);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			printf("\nQuel fichier ? (numéro)\n");
+			scanf("%d",&choix);
+			if (choix == 1) {
+				display_header(elf_struct1->elf_header);
+			} else {
+				display_header(elf_struct2->elf_header);
+			}
+		}
+	}
 }
 
-void affichageContenuSection(ELF_STRUCT* elf_struct) {
+void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	if (elf_struct2 == NULL) {
+		Affichage_section(elf_struct1);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			printf("\nQuel fichier ? (numéro)\n");
+			scanf("%d",&choix);
+			if (choix == 1) {
+				Affichage_section(elf_struct1);
+			} else {
+				Affichage_section(elf_struct2);
+			}
+		}
+	}
+}
+
+void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	//CHOIX DE LA SECTION A AFFICHER
 	//affichage contenu de section
 	printf("En cours");
 }
 
-void affichageSymbole(ELF_STRUCT* elf_struct) {
+void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	//affichage table symbole
 	printf("En cours");
 }
 
-void affichageReimplementation(ELF_STRUCT* elf_struct) {
+void affichageReimplementation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2t) {
 	//affichage de la table de réimplémentation
 	printf("En cours");
 }
 
 void fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+	if (elf_struct2 == NULL) {
+		printf("Un seul fichier en argument, fusion impossible.\n");
+	} else {
 	//FUSION
 	printf("FUUUUUU-SION");
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -98,7 +166,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct1));
 		return EXIT_FAILURE;
 	}
-
+	
+	choix = 0;
 	while (choix != 8) {
 		printf("\nMenu principal\n");
 		printf("--------------------------------------------------\n");
@@ -110,87 +179,42 @@ int main(int argc, char *argv[]) {
 		printf("6 = afficher la table de réimplémentation\n");
 		printf("7 = effectuer la fusion des fichiers objets donnés\n");
 		printf("8 = quitter le programme\n\n");
-		scanf("%d",&choix);
+		GetInteger("Choisissez une option : \n", &choix);
 		switch(choix) {
 			case 1:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageComplet(elf_struct1);
-					else
-						affichageComplet(elf_struct2);
-
-				}
+				affichageComplet(elf_struct1, elf_struct2);
 			break;
 			case 2:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageHeader(elf_struct1);
-					else
-						affichageHeader(elf_struct2);
-				}
+				affichageHeader(elf_struct1, elf_struct2);
 			break;
 			case 3:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageSectionHeader(elf_struct1);
-					else
-						affichageSectionHeader(elf_struct2);
-				}
+				affichageSectionHeader(elf_struct1, elf_struct2);
 			break;
 			case 4:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageContenuSection(elf_struct1);
-					else
-						affichageContenuSection(elf_struct2);
-				}
+				affichageContenuSection(elf_struct1, elf_struct2);
 			break;
 			case 5:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageSymbole(elf_struct1);
-					else
-						affichageSymbole(elf_struct2);
-				}
+				affichageSymbole(elf_struct1, elf_struct2);
 			break;
 			case 6:
-				choix = 0;
-				while (choix != 1 && choix != 2) {
-					printf("\nQuel fichier ?\n");
-					scanf("%d",&choix);
-					if (choix == 1)
-						affichageReimplementation(elf_struct1);
-					else
-						affichageReimplementation(elf_struct2);
-				}
+				affichageReimplementation(elf_struct1, elf_struct2);
 			break;
 			case 7:
-				if (deuxF == 0)
-					printf("Un seul fichier en argument, fusion impossible.\n");
-				else
-					fusion(elf_struct1, elf_struct2);
+				fusion(elf_struct1, elf_struct2);
+			break;
+			case 8:
+				printf("Fermeture du programme\n");
+			break;
+			default:
+				printf("Entrez un chiffre de 1 à 8.\n\n");
 			break;
 		}
 	}
 
 	// Sortie propre
 	close_elf_struct(elf_struct1);
-	close_elf_struct(elf_struct2);
+	if (deuxF)
+		close_elf_struct(elf_struct2);
 
 	return EXIT_SUCCESS;
 

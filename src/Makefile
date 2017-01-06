@@ -1,15 +1,15 @@
 CC=gcc
 CFLAGS=-Wall -Werror
 
-all: linker program_header
+all: linker program_header program_section_header program_table_symbole
 
 linker : linker.o init.o header_elf.o util.o section_header.o table_symbole.o
 	$(CC) -o $@ $^
 
-program_header: program_header.o init.o header_elf.o util.o section_header.o
+program_header: program_header.o init.o header_elf.o util.o section_header.o table_symbole.o
 	$(CC) -o $@ $^
 
-program_section_header: program_section_header.o init.o header_elf.o section_header.o util.o
+program_section_header: program_section_header.o init.o header_elf.o section_header.o util.o table_symbole.o
 	$(CC) -o $@ $^
 
 program_table_symbole: program_table_symbole.o init.o header_elf.o util.o section_header.o table_symbole.o
@@ -26,4 +26,4 @@ table_symbole.o: table_symbole.h global_struct.h util.h
 util.o: util.h
 
 clean:
-	rm *.o program_header linker
+	rm *.o linker program_header program_section_header program_table_symbole
