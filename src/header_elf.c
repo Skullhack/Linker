@@ -74,7 +74,7 @@ int display_header(Elf32_Ehdr *elf_header) {
 
     printf("%-58s  │ ","║ Nombre d'entêtes de section:");
     if (elf_header->e_shnum == 0) printf("%-49s ║\n","0 (Aucune table d'en-tête de section)");
-    else printf("%-49d║\n", elf_header->e_shoff);
+    else printf("%-49d║\n", elf_header->e_shnum);
 
     printf("%-58s  │ %-49d║\n", "║ Table d'indexes d'en-tête de section:", elf_header->e_shstrndx);
     // End print header
@@ -87,10 +87,8 @@ int read_header(ELF_STRUCT* elf_struct) {
     int reverse_needed;
     int header_size = sizeof(Elf32_Ehdr);
 
-    // Header is at the beginning of the file
     fseek(elf_struct->elf_file, 0, SEEK_SET);
 
-    // We read the whole header in one fread
     if ( fread(elf_struct->elf_header, header_size, 1, elf_struct->elf_file) == -1 ) {
         return -1;
     }

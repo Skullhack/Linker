@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <errno.h>
 #include <stdio.h>
+#include <stddef.h>
 
 #include "global_struct.h"
 #include "init.h"
@@ -7,6 +9,22 @@
 #include "linker.h"
 #include "section_header.h"
 #include "util.h"
+
+int GetInteger(const char *prompt, int *i) {
+	int Invalid = 0;
+	int EndIndex;
+	char buffer[100];
+	do {
+		if (Invalid)
+			fputs("Entrez un chiffre de 1 à 8.\n\n", stdout);
+		Invalid = 1;
+		fputs(prompt, stdout);
+		if (NULL == fgets(buffer, sizeof(buffer), stdin))
+			return 1;
+		errno = 0;
+	} while ((1 != sscanf(buffer, "%d %n", i, &EndIndex)) || buffer[EndIndex] || errno);
+	return 0;
+}
 
 
 void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
@@ -18,8 +36,7 @@ void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
-			printf("\nQuel fichier ? (numéro)\n");
-			scanf("%d",&choix);
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
 				display_header(elf_struct1->elf_header);
 				Affichage_section(elf_struct1);
@@ -39,8 +56,7 @@ void affichageHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
-			printf("\nQuel fichier ? (numéro)\n");
-			scanf("%d",&choix);
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
 				display_header(elf_struct1->elf_header);
 			} else {
@@ -56,8 +72,7 @@ void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
-			printf("\nQuel fichier ? (numéro)\n");
-			scanf("%d",&choix);
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
 				Affichage_section(elf_struct1);
 			} else {
@@ -87,7 +102,7 @@ void fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		printf("Un seul fichier en argument, fusion impossible.\n");
 	} else {
-	//FUSION
+	//FUSION (petit dessin pour la soutenance) YOLOLOLO
 	printf("FUUUUUU-SION");
 	}
 }
@@ -145,7 +160,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct1));
 		return EXIT_FAILURE;
 	}
-
+	
+	choix = 0;
 	while (choix != 8) {
 		printf("\nMenu principal\n");
 		printf("--------------------------------------------------\n");
@@ -157,7 +173,7 @@ int main(int argc, char *argv[]) {
 		printf("6 = afficher la table de réimplémentation\n");
 		printf("7 = effectuer la fusion des fichiers objets donnés\n");
 		printf("8 = quitter le programme\n\n");
-		scanf("%d",&choix);
+		GetInteger("Entrez un chiffre proposé : \n", &choix);
 		switch(choix) {
 			case 1:
 				affichageComplet(elf_struct1, elf_struct2);
@@ -182,6 +198,9 @@ int main(int argc, char *argv[]) {
 			break;
 			case 8:
 				printf("Fermeture du programme\n");
+			break;
+			default:
+				printf("Entrez un chiffre de 1 à 8.\n\n");
 			break;
 		}
 	}
