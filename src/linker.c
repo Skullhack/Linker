@@ -8,7 +8,9 @@
 #include "header_elf.h"
 #include "linker.h"
 #include "section_header.h"
+#include "table_symbole.h"
 #include "reimplantation.h"
+#include "section_elf.h"
 #include "util.h"
 
 int GetInteger(const char *prompt, int *i) {
@@ -84,14 +86,35 @@ void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 }
 
 void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
-	//CHOIX DE LA SECTION A AFFICHER
-	//affichage contenu de section
-	printf("En cours");
+	if (elf_struct2 == NULL) {
+		choix_section(elf_struct1);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
+			if (choix == 1) {
+				choix_section(elf_struct1);
+			} else {
+				choix_section(elf_struct2);
+			}
+		}
+	}
 }
 
 void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
-	//affichage table symbole
-	printf("En cours");
+	if (elf_struct2 == NULL) {
+		afficher_table(elf_struct1);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
+			if (choix == 1) {
+				afficher_table(elf_struct1);
+			} else {
+				afficher_table(elf_struct1);
+			}
+		}
+	}
 }
 
 void affichageReimplantation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
@@ -175,8 +198,6 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct1));
 		return EXIT_FAILURE;
 	}
-
-	tab_Reimplantation(elf_struct1); //A VIRER
 	
 	choix = 0;
 	while (choix != 8) {

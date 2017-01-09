@@ -4,17 +4,17 @@
 #include "init.h"
 #include "header_elf.h"
 #include "section_header.h"
+#include "section_elf.h"
 #include "table_symbole.h"
 #include "reimplantation.h"
-/*#include "elf_relocate.h"
-#include "elf_section_content.h"*/
+/*#include "elf_relocate.h"*/
 
 int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 
 	int idx_tab_sym = 0;
 	int nb_sym;
-	/*int total_size_sections_content = 0;
-	int i = 0;*/
+	int total_size_sections_content = 0;
+	int i = 0;
 
 	// Initialise le fichier
 	elf_struct->elf_file = elf_file;
@@ -41,24 +41,27 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 		return -1;
 	}
 
-	/*
-	// Now that a_shdr is initialized, we have the content of the sections
-	// We need the total size of the content
+
+
+
+	
+	// Les sections headers sont initialisés, on doit maintenant lire les sections
+	//On a besoin de la taille totale des sections
 	for (i = 0; i < elf_struct->elf_header->e_shnum; i++) {
 		total_size_sections_content += elf_struct->a_shdr[i].sh_size;
 	}
-	// Allocates memory for the content
+	// On alloue la mémoire pour les sections
 	elf_struct->sections_content = malloc( sizeof(char *) * elf_struct->elf_header->e_shnum );
-	// Fills the sections_content
+	// On remplis le section_content
 	for (i = 0; i < elf_struct->elf_header->e_shnum; i++) {
 		elf_struct->sections_content[i] = malloc ( sizeof(unsigned char) * elf_struct->a_shdr[i].sh_size );
-	
-		if ( get_section_data(&elf_struct->a_shdr[i], elf_struct->sections_content[i], elf_struct->elf_file) == -1 ) {
+
+		if ( read_section(&elf_struct->a_shdr[i], elf_struct, elf_struct->sections_content[i]) == -1 ) {
 			fprintf(stderr, "Error while getting section %d's data\n", i);
 			// error code
 			return -1;
 		}
-	}*/
+	}
 
 	//Récupère le nombre de symboles
 	while(idx_tab_sym < elf_struct->elf_header->e_shnum && elf_struct->a_shdr[idx_tab_sym].sh_type != 2){

@@ -7,8 +7,6 @@
 #include "util.h"
 #include "global_struct.h"
 
-
-
 void tab_Reimplantation(ELF_STRUCT * elf){
 
 	int t_rel =0;
@@ -20,8 +18,7 @@ void tab_Reimplantation(ELF_STRUCT * elf){
 	elf->tab_reimplant = malloc(sizeof(char));
 	elf->a_rel = malloc(sizeof(Elf32_Rel));
 
-	for(int i; i< elf->elf_header->e_shnum;i++ ){
-		
+	for(int i = 0; i< elf->elf_header->e_shnum;i++ ){
 		if(elf->a_shdr[i].sh_type == SHT_REL){
 			
 			/***********************************/
