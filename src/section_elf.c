@@ -13,26 +13,36 @@ int display_section(ELF_STRUCT* elf_struct, int id) {
 		int cptB=-1; //compteur de dByte, il permet de revenir à la ligne et de changer l'adressage
 		unsigned int cptAdrs=0; //l'adresse des mots
 
-		/*printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-    printf("║                                             \e[1;31mELF Section n°:%d\e[0m                             ║\n",id);
-    printf("╠════════════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
-
-		printf("║ Contenu:%s",elf_struct->sections_content[id]);
-		printf("║ AFFICHAGE A TERMINER APRES TEST");
-		*/
+		printf("╔═══════════════════════════════════════════════════════════════╗\n");
+    printf("║                       \e[1;31mELF Section n°:%d\e[0m                        ║\n",id);
+    printf("╠═══════════════════════════════════════════════════════════════╣\n");
+		
 
 		//Affichage degeu, a changer
-		for (int i=0; i<size; i++) {//parcours la section
-			dbyte = elf_struct->sections_content[id][i]; //récupère le ième mot de la section ID
-			cptB++;
+		if (size != 0){
+			for (int i=0; i<size; i++) {//parcours la section
+				dbyte = elf_struct->sections_content[id][i]; //récupère le ième mot de la section ID
+				cptB++;
 
-			if (cptB%16 == 0) { //Si on a finis la ligne, on reviens a la ligne et affiche l'adresse
-				printf("\n0x%08x\t", cptAdrs); // sous la forme 0x00000000
-				cptAdrs= cptAdrs+16; //inc l'adresse de 16 pour afficher les 8prochains dBytes
+				if (cptB%16 == 0) { //Si on a finis la ligne, on reviens a la ligne et affiche l'adresse
+					printf("║0x%.8x\t", cptAdrs); // sous la forme 0x00000000
+					cptAdrs= cptAdrs+16; //inc l'adresse de 16 pour afficher les 8prochains dBytes
+				}
+				printf("%.2x ",dbyte); //Affiche le dByte
+				if (cptB%16 == 15){
+					printf("║\n");
+				}
 			}
-			printf("%02x ",dbyte); //Affiche le dByte
+			if (cptB%16 != 15){
+				for (int i=cptB%16 + 1 ; i<15; i++){
+					printf("   ");
+				}
+				printf("   ║\n");
+			}
+		}else{ 
+			printf("║%-63s║\n","Aucun contenu");
 		}
-
+		printf("╚═══════════════════════════════════════════════════════════════╝\n");
 	return 1;
 
 }
