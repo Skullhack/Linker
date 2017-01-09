@@ -1,6 +1,7 @@
 #include "util.h"
 #include "section_elf.h"
 #include <stdint.h>
+#include <string.h>
 
 /*
 Demande le numéro ou le nom de la section à afficher avant de lancer l'affichage
@@ -8,33 +9,42 @@ Demande le numéro ou le nom de la section à afficher avant de lancer l'afficha
 int choix_section(ELF_STRUCT * elf_struct) {
 	printf("Quelle section afficher ?\n");
 
-	char sec[100];
+	char sec[100]; //
 	int nbSection = elf_struct->elf_header->e_shnum;
 
 	printf("Saisir le numéro (la recherche par nom n'est pas implanté pour le moment...) : ");
 	fgets(sec, sizeof(sec),stdin);
 
 	if (sec[0]=='.') { //a terminer, si le nom est saisie.
-		return -1;
-		/*int nbSection = elf_struct->elf_header->e_shnum;
-		int nametmp;		
+		char secName[strlen(sec)-1];
+		memcpy(secName,sec,strlen(sec)-1);
+		int nbAffiche=0;
+
+		int nbSection = elf_struct->elf_header->e_shnum;
+		char* nametmp;
 
 		for (int i=0; i<nbSection ; i++ ) {
 			
-			nametmp = (int)  elf_struct->a_shdr[i].sh_name;
-			if ( elf_struct->a_shdr[i].sh_name==sec) {
+			nametmp = get_name(elf_struct,i);
+			if ( strcmp(secName,nametmp)==0) {
 				display_section(elf_struct,i);
+				nbAffiche++;
 			}
 		}
-		display_section(elf_struct,atoi(sec));*/
+		if (nbAffiche==0) {
+			printf("La section %s n'existe pas.\n",secName);
+		}
+	} else if (sec[0]!='0' && atoi(sec)==0) {
+			printf("Le nom saisie n'est pas valide\n");
+			return -1;
 	} else {
 		if (atoi(sec)>=nbSection || atoi(sec)<0) {
 			printf("La section %d n'existe pas.\n",atoi(sec));
 			return -1;
 		}
 		display_section(elf_struct,atoi(sec));
-	return -1;
 	}
+	return 0;
 }
 
 /*
