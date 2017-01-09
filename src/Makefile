@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall -Werror
 
-all: linker program_header program_section_header program_section_content program_table_symbole
+all: linker program_header program_section_header program_section_content program_table_symbole program_reimplantation
 
 linker : linker.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o
 	$(CC) -o $@ $^
@@ -18,6 +18,9 @@ program_section_content: program_section_content.o init.o header_elf.o section_h
 program_table_symbole: program_table_symbole.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o
 	$(CC) -o $@ $^
 
+program_reimplantation: program_reimplantation.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o
+	$(CC) -o $@ $^
+
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
@@ -31,4 +34,4 @@ table_symbole.o: table_symbole.h global_struct.h util.h
 util.o: util.h
 
 clean:
-	rm *.o linker program_header program_section_header program_section_content program_table_symbole
+	rm *.o linker program_header program_section_header program_section_content program_table_symbole program_reimplantation

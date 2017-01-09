@@ -175,8 +175,6 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct1));
 		return EXIT_FAILURE;
 	}
-
-	tab_Reimplantation(elf_struct1); //A VIRER
 	
 	choix = 0;
 	while (choix != 8) {
