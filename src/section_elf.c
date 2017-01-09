@@ -98,7 +98,7 @@ int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, unsigned char* sec
 		return -1;
 	}
 
-	if (elf_struct->elf_header->e_ident[EI_DATA] != 2) { //on doit tout permuter le tableau
+	if (elf_struct->elf_header->e_ident[EI_DATA] == 2) { //on doit tout permuter le tableau
 
 		int end=size-1;
 		char temp;
