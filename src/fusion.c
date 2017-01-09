@@ -14,8 +14,12 @@ int Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	int k = 0;
 
 	while (i < elf1->elf_header->e_shnum) {
-		if (shelf1-
-
+		if (shelf1->sh_type == 1) {
+			while (j < elf2->elf_header->e_shnum) {
+				if (shelf2->sh_type == 1 && 
+				j++;
+			}
+		}
 		i++;
 	}
 		
