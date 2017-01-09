@@ -23,12 +23,18 @@ Contact: Guillaume.Huard@imag.fr
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
+#include "global_struct.h"
+
+#include <stdlib.h>
 #include <elf.h>
 
 int is_big_endian();
 
 //If we need to reverse the bytes, return 1
 int need_reverse(unsigned char ei_data);
+
+// Renvoi le nom de la section
+char* get_name(ELF_STRUCT * elf,int numero);
 
 #define reverse_2(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))
 #define reverse_4(x) ((((x)&0xFF)<<24)|((((x)>>8)&0xFF)<<16)|\
