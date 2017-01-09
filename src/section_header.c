@@ -43,7 +43,7 @@ void Affichage_section(ELF_STRUCT * elf ){
 	printf("╟─────┼─────────────────┼───────────────┼─────────┼───────┼───────┼───┼────┼───┼────┼───╢\n");
 	for(int i = 0; i <  elf->elf_header->e_shnum; i++){
 		printf("║  %-3d",i);
-		get_name(elf,elf->a_shdr[i].sh_name,i);
+		printf("│%-17s",get_name(elf,i));
 		printf("│%-15s",case_type(elf->a_shdr[i].sh_type));
 		printf("│%-9.8x",elf->a_shdr[i].sh_addr);
 		printf("│%-7.6x",elf->a_shdr[i].sh_offset);
@@ -64,27 +64,7 @@ void Affichage_section(ELF_STRUCT * elf ){
 	printf("\n  p (spécifique au processeur), N (OS non conforme)");
 	printf("\n  C (compressé)\n");
 }
-/************************************/
-void get_name(ELF_STRUCT * elf,Elf32_Word name ,int numero){
 
-	int offset = (int) elf->a_shdr[elf->elf_header->e_shstrndx].sh_offset;
-	int nom = (int)  elf->a_shdr[numero].sh_name;
-
-	fseek(elf->elf_file,offset+nom,SEEK_SET);
-
-	char c;
-	int cpt = 1;
-	while ( (c = fgetc(elf->elf_file)) != '\0') {
-		cpt++;
-	}
-
-	fseek(elf->elf_file,offset+nom,SEEK_SET);
-
-	char str[cpt];
-	fgets(str,cpt,elf->elf_file);
-
-	printf("│%-17s",str);
-}
 /************************************/
 void case_flags(Elf32_Word flag) {
 

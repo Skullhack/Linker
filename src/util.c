@@ -34,3 +34,25 @@ int need_reverse(unsigned char ei_data) {
 	else 
 		return (ei_data == ELFDATA2MSB && !is_big_endian());
 }
+
+char* get_name(ELF_STRUCT * elf,int numero){
+
+	int offset = (int) elf->a_shdr[elf->elf_header->e_shstrndx].sh_offset;
+	int nom = (int)  elf->a_shdr[numero].sh_name;
+
+	fseek(elf->elf_file,offset+nom,SEEK_SET);
+
+	char c;
+	int cpt = 1;
+	while ( (c = fgetc(elf->elf_file)) != '\0') {
+		cpt++;
+	}
+
+	fseek(elf->elf_file,offset+nom,SEEK_SET);
+
+	char* str = malloc(sizeof(char)*cpt);
+	
+	fgets(str,cpt,elf->elf_file);
+	
+	return str;
+}
