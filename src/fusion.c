@@ -13,6 +13,7 @@ int Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	Elf32_Shdr * shelf2 = elf2->a_shdr;
 	char * cont_section1;
 	char * cont_section2;
+	char * cont_final;
 	int i = 0;
 	int j = 0;
 
@@ -22,6 +23,8 @@ int Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 				if (shelf2->sh_type == 1 && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
 					cont_section1 = malloc(sizeof(char)*shelf1->sh_size);
 					cont_section2 = malloc(sizeof(char)*shelf2->sh_size);
+					cont_final = malloc(sizeof(char)*(shelf1->sh_size+shelf2->sh_size));
+					
 				}
 				j++;
 			}
