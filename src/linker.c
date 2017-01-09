@@ -147,7 +147,6 @@ void fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 
 int main(int argc, char *argv[]) {
 
-	int deuxF = 0;
 	int choix = 0;
 	FILE *f1 = NULL;
 	FILE *f2 = NULL;
@@ -160,10 +159,7 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	if (argc == 3)
-		deuxF = 1;
-
-	if (deuxF) {
+	if (argc > 2) {
 		f2 = fopen(argv[2], "r");
 		if (f2 == NULL) {
 			fprintf(stderr, "Erreur : impossible d'ouvrir le fichier %s en mode lecture\n", argv[2]);
@@ -244,9 +240,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Sortie propre
-	close_elf_struct(elf_struct1);
-	if (deuxF)
+	if (elf_struct2 != NULL)
 		close_elf_struct(elf_struct2);
+	close_elf_struct(elf_struct1);
 
 	return EXIT_SUCCESS;
 
