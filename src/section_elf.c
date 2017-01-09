@@ -2,6 +2,40 @@
 #include "section_elf.h"
 #include <stdint.h>
 
+/*
+Demande le numéro ou le nom de la section à afficher avant de lancer l'affichage
+*/
+int choix_section(ELF_STRUCT * elf_struct) {
+	printf("Quelle section afficher ?\n");
+
+	char sec[100];
+	int nbSection = elf_struct->elf_header->e_shnum;
+
+	printf("Saisir le numéro (la recherche par nom n'est pas implanté pour le moment...) : ");
+	fgets(sec, sizeof(sec),stdin);
+
+	if (sec[0]=='.') { //a terminer, si le nom est saisie.
+		return -1;
+		/*int nbSection = elf_struct->elf_header->e_shnum;
+		int nametmp;		
+
+		for (int i=0; i<nbSection ; i++ ) {
+			
+			nametmp = (int)  elf_struct->a_shdr[i].sh_name;
+			if ( elf_struct->a_shdr[i].sh_name==sec) {
+				display_section(elf_struct,i);
+			}
+		}
+		display_section(elf_struct,atoi(sec));*/
+	} else {
+		if (atoi(sec)>=nbSection || atoi(sec)<0) {
+			printf("La section %d n'existe pas.\n",atoi(sec));
+			return -1;
+		}
+		display_section(elf_struct,atoi(sec));
+	return -1;
+	}
+}
 
 /*
 Affiche la section indiqué en paramètre par le "id". Il peut etre soit un nombre soit un nom de section
@@ -14,8 +48,8 @@ int display_section(ELF_STRUCT* elf_struct, int id) {
 		unsigned int cptAdrs=0; //l'adresse des mots
 
 		printf("╔═══════════════════════════════════════════════════════════════╗\n");
-    printf("║                       \e[1;31mELF Section n°:%d\e[0m                        ║\n",id);
-    printf("╠═══════════════════════════════════════════════════════════════╣\n");
+    	printf("║                       \e[1;31mELF Section n°:%d\e[0m                        ║\n",id);
+    	printf("╠═══════════════════════════════════════════════════════════════╣\n");
 		
 
 		//Affichage degeu, a changer

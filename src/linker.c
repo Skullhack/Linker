@@ -10,6 +10,7 @@
 #include "section_header.h"
 #include "table_symbole.h"
 #include "reimplantation.h"
+#include "section_elf.h"
 #include "util.h"
 
 int GetInteger(const char *prompt, int *i) {
@@ -85,9 +86,19 @@ void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 }
 
 void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
-	//CHOIX DE LA SECTION A AFFICHER
-	//affichage contenu de section
-	printf("En cours");
+	if (elf_struct2 == NULL) {
+		choix_section(elf_struct1);
+	} else {
+		int choix = 0;
+		while (choix != 1 && choix != 2) {
+			GetInteger("Quel fichier ? (numéro)\n", &choix);
+			if (choix == 1) {
+				choix_section(elf_struct1);
+			} else {
+				choix_section(elf_struct2);
+			}
+		}
+	}
 }
 
 void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {

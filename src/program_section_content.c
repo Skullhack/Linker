@@ -35,34 +35,7 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 	
-	printf("Quelle section afficher ?\n");
-
-	char sec[100];
-	int nbSection = elf_struct->elf_header->e_shnum;
-
-	printf("Saisir le numéro (la recherche par nom n'est pas implanté pour le moment...):");
-	fgets(sec, sizeof(sec),stdin);
-
-	if (sec[0]=='.') { //a terminer, si le nom est saisie.
-		return -1;
-		/*int nbSection = elf_struct->elf_header->e_shnum;
-		int nametmp;		
-
-		for (int i=0; i<nbSection ; i++ ) {
-			
-			nametmp = (int)  elf_struct->a_shdr[i].sh_name;
-			if ( elf_struct->a_shdr[i].sh_name==sec) {
-				display_section(elf_struct,i);
-			}
-		}
-		display_section(elf_struct,atoi(sec));*/
-	} else {
-		if (atoi(sec)>=nbSection || atoi(sec)<0) {
-			printf("La section %d n'existe pas.",atoi(sec));
-			return -1;
-		}
-		display_section(elf_struct,atoi(sec));
-	}
+	choix_section(elf_struct);
 
 	close_elf_struct(elf_struct);
 
