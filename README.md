@@ -1,5 +1,5 @@
 # Linker
 
-TODO :\n
-affichage contenu section par nom\n
+TODO : <\b>
+affichage contenu section par nom
 sécuriser le main (input utilisateur)
