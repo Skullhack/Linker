@@ -9,7 +9,7 @@ Demande le numéro ou le nom de la section à afficher avant de lancer l'afficha
 int choix_section(ELF_STRUCT * elf_struct) {
 	printf("Quelle section afficher ?\n");
 
-	char sec[100];
+	char sec[100]; //
 	int nbSection = elf_struct->elf_header->e_shnum;
 
 	printf("Saisir le numéro (la recherche par nom n'est pas implanté pour le moment...) : ");
@@ -18,7 +18,7 @@ int choix_section(ELF_STRUCT * elf_struct) {
 	if (sec[0]=='.') { //a terminer, si le nom est saisie.
 		char secName[strlen(sec)-1];
 		memcpy(secName,sec,strlen(sec)-1);
-	
+		int nbAffiche=0;
 
 		int nbSection = elf_struct->elf_header->e_shnum;
 		char* nametmp;
@@ -28,9 +28,12 @@ int choix_section(ELF_STRUCT * elf_struct) {
 			nametmp = get_name(elf_struct,i);
 			if ( strcmp(secName,nametmp)==0) {
 				display_section(elf_struct,i);
+				nbAffiche++;
 			}
 		}
-		//display_section(elf_struct,atoi(sec));
+		if (nbAffiche==0) {
+			printf("La section %s n'existe pas.\n",secName);
+		}
 	} else if (sec[0]!='0' && atoi(sec)==0) {
 			printf("Le nom saisie n'est pas valide\n");
 			return -1;
