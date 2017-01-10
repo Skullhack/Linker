@@ -54,7 +54,7 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 	elf_struct->sections_content = malloc( sizeof(char *) * elf_struct->elf_header->e_shnum );
 	// On remplis le section_content
 	for (i = 0; i < elf_struct->elf_header->e_shnum; i++) {
-		elf_struct->sections_content[i] = malloc ( sizeof(unsigned char) * elf_struct->a_shdr[i].sh_size );
+		elf_struct->sections_content[i] = malloc ( sizeof(char) * elf_struct->a_shdr[i].sh_size );
 
 		if ( read_section(&elf_struct->a_shdr[i], elf_struct, elf_struct->sections_content[i]) == -1 ) {
 			fprintf(stderr, "Error while getting section %d's data\n", i);

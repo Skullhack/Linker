@@ -7,8 +7,29 @@
 #include "fusion.h"
 #include "util.h"
 
-int Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
-	ELF_STRUCT * elf_fusion = NULL;
+void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
+	fusion_section(elf1, elf2);
+}
+
+void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
+	int i = 0;
+	int j;
+	sf[0] = '\0';
+	
+	while (i < size1) {
+		sf[i] = s1[i];
+		i++;
+	}
+	j = i;
+	i = 0;
+	while (i < size2) {
+		sf[j] = s2[i];
+		i++;
+		j++;
+	}
+}
+
+void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	Elf32_Shdr * shelf1 = elf1->a_shdr;
 	Elf32_Shdr * shelf2 = elf2->a_shdr;
 	char * cont_section1;
@@ -16,27 +37,44 @@ int Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	char * cont_final;
 	int i = 0;
 	int j = 0;
+	unsigned char varAff;
 
 	while (i < elf1->elf_header->e_shnum) {
-		if (shelf1->sh_type == 1) {
+		j = 0;
+		if (shelf1[i].sh_type == 1) {
+			
 			while (j < elf2->elf_header->e_shnum) {
-				if (shelf2->sh_type == 1 && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
-					cont_section1 = malloc(sizeof(char)*shelf1->sh_size);
-					cont_section2 = malloc(sizeof(char)*shelf2->sh_size);
-					cont_final = malloc(sizeof(char)*(shelf1->sh_size+shelf2->sh_size));
+				if (shelf2[j].sh_type == 1 && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
+					cont_section1 = malloc(sizeof(char)*shelf1[i].sh_size);
+					cont_section2 = malloc(sizeof(char)*shelf2[j].sh_size);
+					cont_final = malloc(sizeof(char)*(shelf1[i].sh_size+shelf2[j].sh_size));
+	
+					cont_section1 = elf1->sections_content[i];
+					cont_section2 = elf2->sections_content[j];
+					seccat(cont_section1, cont_section2, cont_final, shelf1[i].sh_size, shelf2[j].sh_size);
 					
-					read_section(shelf1, elf1, cont_section1);
-					read_section(shelf2, elf2, cont_section2);
-					contfinal="";
-					strcat(contfinal,cont_section1);
-					strcat(contfinal,cont_section2);
+					printf("Début section %s\n", get_name(elf1,i));
+					for (int k = 0; k < shelf1[i].sh_size; k++) {
+						varAff = cont_section1[k];
+						printf("%x",varAff);
+					}
+					printf("\n");
+					for (int k = 0; k < shelf2[j].sh_size; k++) {
+						varAff = cont_section2[k];
+						printf("%x",varAff);
+					}
+					printf("\n");
+					for (int k = 0; k < shelf1[i].sh_size+shelf2[j].sh_size; k++) {
+						varAff = cont_final[k];
+						printf("%x",varAff);
+					}
+					printf("\nFin section %s\n\n", get_name(elf1,i));
+					
+					elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
 				}
 				j++;
 			}
 		}
 		i++;
 	}
-		
-
-	return 1;
 }

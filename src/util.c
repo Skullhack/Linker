@@ -57,7 +57,7 @@ char* get_name(ELF_STRUCT * elf,int numero){
 	return str;
 }
 
-int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, unsigned char* section_content) {
+int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, char* section_content) {
 
 	Elf32_Off offset = monShdr->sh_offset; //debut de la section
 	uint32_t size = (uint32_t) monShdr->sh_size; //taille de la section

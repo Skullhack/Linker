@@ -62,7 +62,6 @@ int display_section(ELF_STRUCT* elf_struct, int id) {
     	printf("╠═══════════════════════════════════════════════════════════════╣\n");
 		
 
-		//Affichage degeu, a changer
 		if (size != 0){
 			for (int i=0; i<size; i++) {//parcours la section
 				dbyte = elf_struct->sections_content[id][i]; //récupère le ième mot de la section ID
