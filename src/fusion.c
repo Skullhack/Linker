@@ -11,8 +11,20 @@ void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	fusion_section(elf1, elf2);
 }
 
-void maj_offset(ELF_STRUCT * elf, int numS, int size) {
-
+void maj_offset(ELF_STRUCT * elf, int num, int size) {
+	Elf32_Shdr * shelf = elf->a_shdr;
+	/*int allign = shelf[num].sh_addralign;
+	
+	while (size % allign != 0) {
+		printf("yololo");
+		size++;
+	}*/
+	
+	for (int i = 0; i < elf->elf_header->e_shnum; i++) {
+		if (shelf[i].sh_offset > shelf[num].sh_offset) {
+			shelf[i].sh_offset = shelf[i].sh_offset + size;
+		}
+	}
 }
 
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
@@ -41,7 +53,7 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	char * cont_final;
 	int i = 0;
 	int j = 0;
-	unsigned char varAff;
+	//unsigned char varAff;
 
 	while (i < elf1->elf_header->e_shnum) {
 		j = 0;
@@ -57,7 +69,7 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					cont_section2 = elf2->sections_content[j];
 					seccat(cont_section1, cont_section2, cont_final, shelf1[i].sh_size, shelf2[j].sh_size);
 					
-					printf("Début section %s\n", get_name(elf1,i));
+					/*printf("Début section %s\n", get_name(elf1,i));
 					for (int k = 0; k < shelf1[i].sh_size; k++) {
 						varAff = cont_section1[k];
 						printf("%x",varAff);
@@ -72,7 +84,7 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 						varAff = cont_final[k];
 						printf("%x",varAff);
 					}
-					printf("\nFin section %s\n\n", get_name(elf1,i));
+					printf("\nFin section %s\n\n", get_name(elf1,i));*/
 					
 					elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
 					elf1->sections_content[i] = realloc(elf1->sections_content[i], elf1->a_shdr[i].sh_size);
