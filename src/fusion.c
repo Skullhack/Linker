@@ -6,6 +6,7 @@
 #include "global_struct.h"
 #include "fusion.h"
 #include "util.h"
+#include "section_header.h"
 
 void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	fusion_section(elf1, elf2);
@@ -13,18 +14,17 @@ void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 
 void maj_offset(ELF_STRUCT * elf, int num, int size) {
 	Elf32_Shdr * shelf = elf->a_shdr;
-	/*int allign = shelf[num].sh_addralign;
-	
-	while (size % allign != 0) {
-		printf("yololo");
-		size++;
-	}*/
+	//int allign = shelf[num].sh_addralign;
 	
 	for (int i = 0; i < elf->elf_header->e_shnum; i++) {
-		if (shelf[i].sh_offset > shelf[num].sh_offset) {
+		if ((shelf[i].sh_offset > shelf[num].sh_offset) || ((shelf[i].sh_offset == shelf[num].sh_offset) && (i > num))) {
 			shelf[i].sh_offset = shelf[i].sh_offset + size;
+			/*if ((shelf[i].sh_offset % allign) != 0)
+				shelf[i].sh_offset = shelf[i].sh_offset + (allign - (shelf[i].sh_offset % allign));*/
+			//printf("%s\n",get_name(elf,i));
 		}
 	}
+	printf("%s\n",get_name(elf,20));
 }
 
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
@@ -54,12 +54,11 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	int i = 0;
 	int j = 0;
 	//unsigned char varAff;
+	int test = 0;
 
 	while (i < elf1->elf_header->e_shnum) {
-		j = 0;
-		if (shelf1[i].sh_type == 1) {
-			
-			while (j < elf2->elf_header->e_shnum) {
+		if (shelf1[i].sh_type) {
+			while (j < elf2->elf_header->e_shnum && test == 0) {
 				if (shelf2[j].sh_type == 1 && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
 					cont_section1 = malloc(sizeof(char)*shelf1[i].sh_size);
 					cont_section2 = malloc(sizeof(char)*shelf2[j].sh_size);
