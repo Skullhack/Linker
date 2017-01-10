@@ -11,6 +11,10 @@ void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	fusion_section(elf1, elf2);
 }
 
+void maj_offset(ELF_STRUCT * elf, int numS, int size) {
+
+}
+
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
 	int i = 0;
 	int j;
@@ -71,6 +75,9 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					printf("\nFin section %s\n\n", get_name(elf1,i));
 					
 					elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
+					elf1->sections_content[i] = realloc(elf1->sections_content[i], elf1->a_shdr[i].sh_size);
+					elf1->sections_content[i] = cont_final;
+					maj_offset(elf1, i, shelf2[j].sh_size);
 				}
 				j++;
 			}
