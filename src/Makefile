@@ -32,6 +32,7 @@ section_header.o: section_header.h global_struct.h util.h
 section_elf.o: section_elf.h global_struct.h util.h
 table_symbole.o: table_symbole.h global_struct.h util.h
 util.o: util.h
+fusion_reimp.o: util.h
 
 clean:
 	rm *.o linker program_header program_section_header program_section_content program_table_symbole program_reimplantation
