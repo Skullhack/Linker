@@ -53,6 +53,8 @@ char* get_name(ELF_STRUCT * elf,int numero){
 	char* str = malloc(sizeof(char)*cpt);
 	
 	fgets(str,cpt,elf->elf_file);
+
+	//printf("Section : %d, Offset : %d, Index dans str : %d, Nom : %s\n",numero, offset, nom, str);
 	
 	return str;
 }
