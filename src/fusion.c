@@ -25,6 +25,11 @@ int Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					cont_section2 = malloc(sizeof(char)*shelf2->sh_size);
 					cont_final = malloc(sizeof(char)*(shelf1->sh_size+shelf2->sh_size));
 					
+					read_section(shelf1, elf1, cont_section1);
+					read_section(shelf2, elf2, cont_section2);
+					contfinal="";
+					strcat(contfinal,cont_section1);
+					strcat(contfinal,cont_section2);
 				}
 				j++;
 			}
