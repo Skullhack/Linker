@@ -56,3 +56,29 @@ char* get_name(ELF_STRUCT * elf,int numero){
 	
 	return str;
 }
+
+int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, char* section_content) {
+
+	Elf32_Off offset = monShdr->sh_offset; //debut de la section
+	uint32_t size = (uint32_t) monShdr->sh_size; //taille de la section
+	fseek(elf_struct->elf_file, offset, SEEK_SET); //on deplace la tete sur le debut
+
+	if ( fread(section_content, size, 1, elf_struct->elf_file) == -1) { //on read et la place dans le section_content passé en paramètre
+		return -1;
+	}
+
+	if (elf_struct->elf_header->e_ident[EI_DATA] == 2) { //on doit tout permuter le tableau
+
+		int end=size-1;
+		char temp;
+		for (int i=0;i<(size)/2; i++) {
+			temp = section_content[i];
+			section_content[i] = section_content[end];
+			section_content[end] = temp;
+			end--;
+		}
+	}
+
+	return 1;
+
+}

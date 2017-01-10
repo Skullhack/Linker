@@ -36,6 +36,9 @@ int need_reverse(unsigned char ei_data);
 // Renvoi le nom de la section
 char* get_name(ELF_STRUCT * elf,int numero);
 
+// Ecrit le contenu de la section monShdr de la structure elf_struct dans section_content
+int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, char* section_content);
+
 #define reverse_2(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))
 #define reverse_4(x) ((((x)&0xFF)<<24)|((((x)>>8)&0xFF)<<16)|\
 						((((x)>>16)&0xFF)<<8)|(((x)>>24)&0xFF))

@@ -54,7 +54,7 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 	elf_struct->sections_content = malloc( sizeof(char *) * elf_struct->elf_header->e_shnum );
 	// On remplis le section_content
 	for (i = 0; i < elf_struct->elf_header->e_shnum; i++) {
-		elf_struct->sections_content[i] = malloc ( sizeof(unsigned char) * elf_struct->a_shdr[i].sh_size );
+		elf_struct->sections_content[i] = malloc ( sizeof(char) * elf_struct->a_shdr[i].sh_size );
 
 		if ( read_section(&elf_struct->a_shdr[i], elf_struct, elf_struct->sections_content[i]) == -1 ) {
 			fprintf(stderr, "Error while getting section %d's data\n", i);
@@ -112,19 +112,18 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 
 void close_elf_struct(ELF_STRUCT* elf_struct) {
 
-	//int i;
-
-	if (elf_struct->elf_header != NULL) free(elf_struct->elf_header);
-	if (elf_struct->a_shdr != NULL) free(elf_struct->a_shdr);
-	/*if (elf_struct->a_sym != NULL) free(elf_struct->a_sym);
-	for (i = 0; i < nb_sections; i++) {
+	for (int i = 0; i < elf_struct->elf_header->e_shnum; i++) {
 		if (elf_struct->sections_content[i] != NULL) {
 			free(elf_struct->sections_content[i]);
 		}
 	}
+
+	if (elf_struct->elf_header != NULL) free(elf_struct->elf_header);
+	if (elf_struct->a_shdr != NULL) free(elf_struct->a_shdr);
+	if (elf_struct->a_sym != NULL) free(elf_struct->a_sym);
 	if (elf_struct->sections_content != NULL) free(elf_struct->sections_content);
 	if (elf_struct->a_rel != NULL) free(elf_struct->a_rel);
-	if (elf_struct->a_rela != NULL) free(elf_struct->a_rela);*/
+	if (elf_struct->a_rela != NULL) free(elf_struct->a_rela);
 	if (elf_struct->elf_file != NULL) fclose(elf_struct->elf_file);
 	if (elf_struct != NULL) free(elf_struct);
 

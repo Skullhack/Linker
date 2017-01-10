@@ -17,7 +17,7 @@ typedef struct ELF_STRUCT {
 	Elf32_Sym *a_sym;
 	Elf32_Rel *a_rel;
 	Elf32_Rela *a_rela;
-	unsigned char **sections_content;
+	char **sections_content;
 	int * tab_reimplant;
 	int taille_rel;
 	int taille_rela;

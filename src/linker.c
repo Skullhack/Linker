@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <string.h>
 
 #include "global_struct.h"
 #include "init.h"
@@ -11,6 +12,7 @@
 #include "table_symbole.h"
 #include "reimplantation.h"
 #include "section_elf.h"
+#include "fusion.h"
 #include "util.h"
 
 int GetInteger(const char *prompt, int *i) {
@@ -136,18 +138,16 @@ void affichageReimplantation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
-void fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+void lancer_fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		printf("Un seul fichier en argument, fusion impossible.\n");
 	} else {
-	//FUSION (petit dessin pour la soutenance) YOLOLOLO
-	printf("FUUUUUU-SION");
+		Fusion(elf_struct1, elf_struct2);
 	}
 }
 
 int main(int argc, char *argv[]) {
 
-	int deuxF = 0;
 	int choix = 0;
 	FILE *f1 = NULL;
 	FILE *f2 = NULL;
@@ -160,10 +160,7 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	if (argc == 3)
-		deuxF = 1;
-
-	if (deuxF) {
+	if (argc > 2) {
 		f2 = fopen(argv[2], "r");
 		if (f2 == NULL) {
 			fprintf(stderr, "Erreur : impossible d'ouvrir le fichier %s en mode lecture\n", argv[2]);
@@ -232,7 +229,7 @@ int main(int argc, char *argv[]) {
 				affichageComplet(elf_struct1, elf_struct2);
 			break;
 			case 7:
-				fusion(elf_struct1, elf_struct2);
+				lancer_fusion(elf_struct1, elf_struct2);
 			break;
 			case 8:
 				printf("Fermeture du programme\n");
@@ -244,9 +241,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Sortie propre
-	close_elf_struct(elf_struct1);
-	if (deuxF)
+	if (elf_struct2 != NULL)
 		close_elf_struct(elf_struct2);
+	close_elf_struct(elf_struct1);
 
 	return EXIT_SUCCESS;
 

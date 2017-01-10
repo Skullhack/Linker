@@ -16,9 +16,4 @@ Affiche la section indiqué en paramètre par le "id". Il peut etre soit un nomb
 */
 int display_section(ELF_STRUCT* elf_struct, int id) ;
 
-/*
-Remplis la structure avec toutes les sections
-*/
-int read_section(Elf32_Shdr* shdr, ELF_STRUCT* elf_struct, unsigned char* section_content);
-
 #endif
