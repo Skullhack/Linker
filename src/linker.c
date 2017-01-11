@@ -209,9 +209,11 @@ int main(int argc, char *argv[]) {
 	int opt;
 	int affh=0;
 	int affS=0;
-	char* affx;
+	char* affx=NULL;
 	int affs=0;
 	int affr=0;
+	int fusion=0;
+
 	struct option longopts[] = {
 		{ "ALL", required_argument, NULL, 'A' },
 		{ "all", required_argument, NULL, 'a' },
@@ -220,11 +222,12 @@ int main(int argc, char *argv[]) {
 		{ "section", required_argument, NULL, 'x' },
 		{ "symbole", no_argument, NULL, 's' },
 		{ "reimp", no_argument, NULL, 'r' },
+		{ "fusion", no_argument, NULL, 'f' },
 		{ "help", no_argument, NULL, '?' },
 		{ NULL, 0, NULL, 0 }
 	};
 
-	while ( (opt = getopt_long(argc,argv,"aA:hSx:sr?", longopts, NULL)) !=-1) {
+	while ( (opt = getopt_long(argc,argv,"aA:hSx:srf?", longopts, NULL)) !=-1) {
 		switch(opt) {
 		//Erreur si on tape ./linker -A [fichier...] il essaye de lire le fichier -A
 		case 'a':
@@ -255,6 +258,9 @@ int main(int argc, char *argv[]) {
 		case 'r':
 			affr=1;
 			break;
+		case 'f':
+			fusion=1;
+			break;
 		case '?':
 			usage(argv[0]);
 			break;
@@ -265,26 +271,37 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	/*Temp, utile que pour l'affichage alors qu'on peut surement l'utiliser tout le temps*/
 	for (int i=optind;i<argc;i++) {
 		elf_struct1 = Init_f_elfstruct(argv[i],elf_struct1);
-		printf("fichier:%s\n",argv[i]);
 		if (elf_struct1!=NULL) {
 			if (affh) {
+				printf("1");
 				affichageHeader(elf_struct1,elf_struct2);
 			}
 			if (affS) {
+				printf("2");
 				affichageSectionHeader(elf_struct1,elf_struct2);
 			}
 			if (affx!=NULL) {
+				printf("entre");
 				affichageContenuSection(elf_struct1,elf_struct2,affx);
 			}
 			if (affs) {
+				printf("4");
 				affichageSymbole(elf_struct1,elf_struct2);
 			}
 			if (affr) {
+				printf("5");
 				affichageReimplantation(elf_struct1,elf_struct2);
 			}
 		}
+		/*Temp, utilisé que pour la fusion de DEUX fichiers*/
+		if (fusion) {
+				elf_struct1 = Init_f_elfstruct(argv[optind],elf_struct1);
+				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
+				lancer_fusion(elf_struct1, elf_struct2);
+			}
 	}
 	
 
