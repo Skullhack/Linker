@@ -21,7 +21,6 @@ typedef struct ELF_STRUCT {
 	int * tab_reimplant;
 	int taille_rel;
 	int taille_rela;
-	int str_table_idx;
 	int error_code; 
 
 } ELF_STRUCT;

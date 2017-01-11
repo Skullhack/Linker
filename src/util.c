@@ -36,25 +36,23 @@ int need_reverse(unsigned char ei_data) {
 }
 
 char* get_name(ELF_STRUCT * elf,int numero){
-
-	int offset = (int) elf->a_shdr[elf->elf_header->e_shstrndx].sh_offset;
-	int nom = (int)  elf->a_shdr[numero].sh_name;
-
-	fseek(elf->elf_file,offset+nom,SEEK_SET);
-
-	char c;
-	int cpt = 1;
-	while ( (c = fgetc(elf->elf_file)) != '\0') {
-		cpt++;
-	}
-
-	fseek(elf->elf_file,offset+nom,SEEK_SET);
-
-	char* str = malloc(sizeof(char)*cpt);
+	int offset = elf->a_shdr[numero].sh_name;
+	char * shstr = elf->sections_content[elf->elf_header->e_shstrndx];
+	char * str;
+	int taille_mot = 1;
+	int j = 0;
+	int i = offset;
 	
-	fgets(str,cpt,elf->elf_file);
-
-	//printf("Section : %d, Offset : %d, Index dans str : %d, Nom : %s\n",numero, offset, nom, str);
+	while (shstr[i] != '\0') {
+		taille_mot++;
+		i++;
+	}
+	
+	str = malloc(sizeof(char)*taille_mot);
+	for (i = offset; i < taille_mot+offset; i++) {
+		str[j] = shstr[i];
+		j++;
+	}
 	
 	return str;
 }
