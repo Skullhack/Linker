@@ -3,19 +3,24 @@
 #include <string.h>
 #include "util.h"
 
-//	ATTENTION : DANS LA STRUCTURE, LES SECTIONS (**sections_content) SONT DANS LE MEME ORDRE QUE LES ENTETES DE SECTION (c'est plus simple pour programmer et on réécrira grâce aux offsets dans le fichier final)
+/*	!!! ATTENTION !!! : DANS LA STRUCTURE, LES SECTIONS (**sections_content) SONT DANS 
+	LE MEME ORDRE QUE LES ENTETES DE SECTION (c'est plus simple pour programmer et on 
+	réécrira grâce aux offsets dans le fichier final)	*/
 
 // 	A FAIRE :
 //	--------------------------------PARTIE 1 :----------------------------
-//	Modifier le contenu des sections avec la fusion des sections du fichier 2 (REALLOC de elf_file1->sections_content[])	----------> FAIT
+//	Modifier le contenu des sections avec la fusion des sections du fichier 2 (REALLOC de elf_file1->sections_content[])		----------> FAIT
 //	--------------------------------PARTIE 2 :----------------------------
-//	Concaténation de chaque nouvelle entête de section après la dernière entête de section (REALLOC de elf_file1->a_shdr)
-// 	Modifier le sh_name des nouvelles sections ajoutées
-// 	Modifier le size de sh_strtab
-//  Modifier le contenu de sh_strtab (REALLOC de elf_file1->sections_content[])
-//	Concaténation du contenu de chaque nouvelle section à la suite des sections (REALLOC de elf_file1->sections_content)
+//	Concaténation de chaque nouvelle entête de section après la dernière entête de section (REALLOC de elf_file1->a_shdr)		----------> FAIT
+// 	Modifier le sh_name des nouvelles sections ajoutées																			----------> FAIT
+// 	Modifier le size de sh_strtab																								----------> FAIT
+//  Modifier le contenu de sh_strtab (REALLOC de elf_file1->sections_content[])													----------> FAIT
+//	Modification de l'offset de toutes les sections qui se trouvent après .shstrtab (nouvel appel de offset_section_update())	---------->	FAIT
+//	Concaténation du contenu de chaque nouvelle section à la suite des sections (REALLOC de elf_file1->sections_content)		---------->	FAIT
 //	Dans le header recalculer l'offset de la première entête de section
 
+/*	Décale l'offset de toutes les sections qui se trouvent après l'offset de la 
+	section d'indice passé en paramètre, d'une taille "size"	*/
 void offset_section_update(int ind_sect, Elf32_Word size, ELF_STRUCT * elf){
 	int k = 0;
 
@@ -29,6 +34,7 @@ void offset_section_update(int ind_sect, Elf32_Word size, ELF_STRUCT * elf){
 	}
 }
 
+//	Renvoie l'indice de la section d'offset maximum
 int max_offset_section(ELF_STRUCT * elf){
 	int i = 0, ind_max = 0, max_offset = 0;
 	
@@ -48,6 +54,7 @@ int max_offset_section(ELF_STRUCT * elf){
 	return ind_max;
 }
 
+//	Programme principale de fusion des tables de réimplantation de 2 fichiers objets
 void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 	bool missing[elf_file2->elf_header->e_shnum];
 	int i = 0, j = 0, ind_sect_max = 0, add_off_sect = 0;
@@ -77,19 +84,21 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 					
 					/*	Concaténation de la section du fichier 2 à la fin de la section 
 						équivalente dans elf_file1->sections_content[i] */
-					elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof(elf_file1->sections_content) + elf_file2->a_shdr[j].sh_size);
-					elf_file1->sections_content[i] = elf_file1->sections_content[i] + elf_file2->sections_content[j];
+					elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file2->a_shdr[j].sh_size);	//	A CONFIRMER
+					elf_file1->sections_content[i] = strcat(elf_file1->sections_content[i], elf_file2->sections_content[j]);	//	A CONFIRMER
 					
-					// 	Modification du size de la section du fichier 1 en rajoutant le size de la section du fichier 2
+					/*	Modification du size de la section du fichier 1 en rajoutant le 
+						size de la section du fichier 2	*/
 					elf_file1->a_shdr[i].sh_size += elf_file2->a_shdr[j].sh_size;
 			
 					/*	Décallage du offset de la première entête de section qui se
 					 	trouve dans le header */					
 					elf_file1->elf_header->e_shoff += elf_file2->a_shdr[j].sh_size;
 					
-					/*	Appelle de offset_section_update() qui modifie l'offset de toutes
-						les sections qui se trouvent après l'offset de la fonction actuelle */
+					/*	Appel de offset_section_update() qui modifie l'offset de toutes
+						les sections qui se trouvent après l'offset de la section actuelle */
 					offset_section_update(i, elf_file2->a_shdr[j].sh_size, elf_file1);
+					
 				}
 			}
 		}
@@ -97,22 +106,49 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 	
 	// 	-------------------------------PARTIE 2 - CONCATENATION--------------------------------
 	
-	// 	Appelle de max_offset_section() qui recherche la section d'offset maximum
-	ind_sect_max = max_offset_section(elf_file1);
-	/*	Calcule de la position à laquelle ajouter les sections du fichier 2 manquantes
-		dans le fichier 1 */
-	add_off_sect = elf_file1->a_shdr[ind_sect_max].sh_offset + elf_file1->a_shdr[ind_sect_max].sh_size;
-	
 	//	Parcours du tableau de booléens et ajout des sections marquées à TRUE
 	for(i = 0 ; i < elf_file2->elf_header->e_shnum; i++){
 	
 		if(missing[i] == true){
 		
-			/*	Offset de la section de numéro i = offset de la dernière section du
-				file1 + le size de la dernière section du file1 */
-				
-				// REALLOCATION DE LA TAILLE DES ENTETES DE SECTIONS
+			// 	Dans le tableau de booléens, passage à FALSE des sections ajoutées
+			missing[i] = false;
+		
+			//	------------------------------------------AJOUT DE L'ENTETE DE LA SECTION------------------------------------------
+			//	Ajout de l'entête de section du fichier 2 après toutes les entêtes de section du fichier 1
+			elf_file1->a_shdr = realloc(elf_file1->a_shdr, sizeof(Elf32_Shdr) * (elf_file1->elf_header->e_shnum + 1));	//	A CONFIRMER
+			memcpy(&(elf_file1->a_shdr[elf_file1->elf_header->e_shnum]), &(elf_file2->a_shdr[i]), sizeof(Elf32_Shdr));	//	A CONFIRMER
+			elf_file1->elf_header->e_shnum += 1;
 			
+			//	------------------------------------------AJOUT DU NOM DE LA SECTION------------------------------------------
+			//	Modification du sh_name de la nouvelle section ajoutée
+			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name = elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size;
+			
+			// 	Modification du size de sh_strtab (le +1 correspond au caractère '\0')
+			elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size += strlen(get_name(elf_file2, i)) + 1;
+			
+			//	Concaténation du nom de la section à la fin de .shstrtab
+			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + (strlen(get_name(elf_file2, i))+1) );	//	A CONFIRMER
+			elf_file1->sections_content[elf_file1->elf_header->e_shstrndx] = strcat(elf_file1->sections_content[elf_file1->elf_header->e_shstrndx], get_name(elf_file2, i));	//	A CONFIRMER
+			
+			//	Modification de l'offset de toutes les sections suivant .shstrtab
+			offset_section_update(elf_file1->elf_header->e_shstrndx, strlen(get_name(elf_file2, i)) + 1, elf_file1);
+			
+			//	------------------------------------------AJOUT DE LA SECTION------------------------------------------			
+			// 	Appel de max_offset_section() qui recherche l'indice de la section d'offset maximum
+			ind_sect_max = max_offset_section(elf_file1);
+			//	Calcul de l'offset auquel ajouter les sections du fichier 2 manquantes dans le fichier 1
+			add_off_sect = elf_file1->a_shdr[ind_sect_max].sh_offset + elf_file1->a_shdr[ind_sect_max].sh_size;
+			
+			//	Modification de l'offset de la section ajoutée
+			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_offset = add_off_sect;
+					
+			//	Ajout du contenu de la section du fichier 2 après toutes les autres sections du fichier 1
+			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);
+			memcpy(&(elf_file1->sections_content[elf_file1->elf_header->e_shnum - 1]), &(elf_file2->sections_content[i]), elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);
+			
+			//	Modification dans le header de l'offset de la première entête de section
+			elf_file1->elf_header->e_shoff += (strlen(get_name(elf_file2, i)) + 1) + elf_file2->a_shdr[i].sh_size;
 							
 		}	
 	}
