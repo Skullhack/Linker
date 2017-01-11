@@ -27,6 +27,7 @@ Contact: Guillaume.Huard@imag.fr
 
 #include <stdlib.h>
 #include <elf.h>
+#include <string.h>
 
 int is_big_endian();
 
@@ -38,6 +39,15 @@ char* get_name(ELF_STRUCT * elf,int numero);
 
 //Décale l'offset des sections après la section num de size
 void maj_offset(ELF_STRUCT * elf, int num, int size);
+
+//Renvoie l'indice de la section d'offset maximum
+int max_offset_section(ELF_STRUCT * elf);
+
+//Ajoute un nom de section dans la shstrtab de la structure
+void ajout_nom_section(ELF_STRUCT * elf, char * nom);
+
+//Ajoute le contenu de la section dans la structure elf
+void ajout_contenu_section(ELF_STRUCT * elf, char * contenu);
 
 #define reverse_2(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))
 #define reverse_4(x) ((((x)&0xFF)<<24)|((((x)>>8)&0xFF)<<16)|\

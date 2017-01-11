@@ -8,7 +8,7 @@
 
 char* afficher_type(unsigned char st_info){
 	
-	st_info = st_info & 0xf;
+	st_info = ELF32_ST_TYPE(st_info);
 	switch(st_info){
 		case 0 :
 		 	return "NOTYPE";
@@ -38,7 +38,7 @@ char* afficher_type(unsigned char st_info){
 
 char* afficher_bind(unsigned char st_info){
 	
-	st_info = st_info >> 4;
+	st_info = ELF32_ST_BIND(st_info);
 	
 	switch(st_info){
 		case 0 :
