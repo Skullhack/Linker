@@ -69,3 +69,22 @@ void maj_offset(ELF_STRUCT * elf, int num, int size) {
 		}
 	}
 }
+
+int max_offset_section(ELF_STRUCT * elf){
+	int i = 0, ind_max = 0, max_offset = 0;
+	
+	ind_max = i;
+	max_offset = elf->a_shdr[i].sh_offset ;
+
+	for(i = 1; i < elf->elf_header->e_shnum ; i++){
+	
+		if(elf->a_shdr[i].sh_offset > max_offset){
+		
+			ind_max = i;
+			max_offset = elf->a_shdr[i].sh_offset;		
+			
+		}
+	}
+	
+	return ind_max;
+}

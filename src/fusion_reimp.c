@@ -19,26 +19,6 @@
 //	Concaténation du contenu de chaque nouvelle section à la suite des sections (REALLOC de elf_file1->sections_content)		---------->	FAIT
 //	Dans le header recalculer l'offset de la première entête de section
 
-//	Renvoie l'indice de la section d'offset maximum
-int max_offset_section(ELF_STRUCT * elf){
-	int i = 0, ind_max = 0, max_offset = 0;
-	
-	ind_max = i;
-	max_offset = elf->a_shdr[i].sh_offset ;
-
-	for(i = 1; i < elf->elf_header->e_shnum ; i++){
-	
-		if(elf->a_shdr[i].sh_offset > max_offset){
-		
-			ind_max = i;
-			max_offset = elf->a_shdr[i].sh_offset;		
-			
-		}
-	}
-	
-	return ind_max;
-}
-
 //	Programme principale de fusion des tables de réimplantation de 2 fichiers objets
 void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 	bool missing[elf_file2->elf_header->e_shnum];

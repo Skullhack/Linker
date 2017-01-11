@@ -17,8 +17,9 @@ void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	int offset_supp = 0;
 	
-	//incrémentation du nombre de section
+	//Incrémentation du nombre de section
 	elf1->elf_header->e_shnum++;
+	int idxsec_max
 	
 	//Réallocation de l'espace alloué aux sections headers
 	elf1->a_shdr = realloc(elf1->a_shdr, sizeof(Elf32_Shdr)*elf1->elf_header->e_shnum);
@@ -28,6 +29,7 @@ void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	
 	//Modifications de la nouvelle section header
 	elf1->a_shdr[e_shnum-1].sh_name = elf1->a_shdr[elf1->elf_header->e_shstrndx].sh_size+1;
+	elf1->a_shdr[e_shnum-1]
 }
 
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {

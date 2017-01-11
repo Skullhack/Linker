@@ -39,6 +39,9 @@ char* get_name(ELF_STRUCT * elf,int numero);
 //Décale l'offset des sections après la section num de size
 void maj_offset(ELF_STRUCT * elf, int num, int size);
 
+//	Renvoie l'indice de la section d'offset maximum
+int max_offset_section(ELF_STRUCT * elf);
+
 #define reverse_2(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))
 #define reverse_4(x) ((((x)&0xFF)<<24)|((((x)>>8)&0xFF)<<16)|\
 						((((x)>>16)&0xFF)<<8)|(((x)>>24)&0xFF))
