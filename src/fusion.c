@@ -14,6 +14,22 @@ void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	//fusion_reimp(elf1, elf2);
 }
 
+void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
+	int offset_supp = 0;
+	
+	//incrémentation du nombre de section
+	elf1->elf_header->e_shnum++;
+	
+	//Réallocation de l'espace alloué aux sections headers
+	elf1->a_shdr = realloc(elf1->a_shdr, sizeof(Elf32_Shdr)*elf1->elf_header->e_shnum);
+	
+	//Copie de la nouvelle section header
+	elf1->a_shdr[e_shnum-1] = elf2->a_shdr[num];
+	
+	//Modifications de la nouvelle section header
+	elf1->a_shdr[e_shnum-1].sh_name = elf1->a_shdr[elf1->elf_header->e_shstrndx].sh_size+1;
+}
+
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
 	int i = 0;
 	int j;
@@ -40,13 +56,14 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	char * cont_final;
 	int i = 0;
 	int j = 0;
+	int trouve = 0;
 	//unsigned char varAff;
 
 	while (i < elf1->elf_header->e_shnum) {
-		if (shelf1[i].sh_type) {
+		if (shelf1[i].sh_type == SHT_PROGBITS) {
 			j = 0;
 			while (j < elf2->elf_header->e_shnum) {
-				if (shelf2[j].sh_type == 1 && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
+				if (shelf2[j].sh_type == SHT_PROGBITS && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
 					cont_section1 = malloc(sizeof(char)*shelf1[i].sh_size);
 					cont_section2 = malloc(sizeof(char)*shelf2[j].sh_size);
 					cont_final = malloc(sizeof(char)*(shelf1[i].sh_size+shelf2[j].sh_size));
@@ -81,4 +98,43 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 		}
 		i++;
 	}
+	
+	j = 0;
+	while (j < elf2->elf_header->e_shnum) {
+		if (shelf2[j].sh_type == SHT_PROGBITS) {
+		i = 0;
+		trouve = 0;
+		while (i < elf1->elf_header->e_shnum) {
+			if (shelf1[i].sh_type == SHT_PROGBITS && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
+				trouve = 1;
+			}
+		}
+		
+		if (!trouve) {
+			ajout_section(elf1, elf2, j);
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 }
+

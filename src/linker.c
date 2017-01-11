@@ -113,7 +113,7 @@ void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 			if (choix == 1) {
 				afficher_table(elf_struct1);
 			} else {
-				afficher_table(elf_struct1);
+				afficher_table(elf_struct2);
 			}
 		}
 	}
@@ -143,6 +143,7 @@ void lancer_fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 		printf("Un seul fichier en argument, fusion impossible.\n");
 	} else {
 		Fusion(elf_struct1, elf_struct2);
+		printf("Fusion terminée.\n");
 	}
 }
 
