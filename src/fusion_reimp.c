@@ -19,21 +19,6 @@
 //	Concaténation du contenu de chaque nouvelle section à la suite des sections (REALLOC de elf_file1->sections_content)		---------->	FAIT
 //	Dans le header recalculer l'offset de la première entête de section
 
-/*	Décale l'offset de toutes les sections qui se trouvent après l'offset de la 
-	section d'indice passé en paramètre, d'une taille "size"	*/
-void offset_section_update(int ind_sect, Elf32_Word size, ELF_STRUCT * elf){
-	int k = 0;
-
-	for(k = 0; k < elf->elf_header->e_shnum ; k++){
-	
-		if(elf->a_shdr[k].sh_offset > elf->a_shdr[ind_sect].sh_offset){
-		
-			elf->a_shdr[k].sh_offset += size;
-		
-		}
-	}
-}
-
 //	Renvoie l'indice de la section d'offset maximum
 int max_offset_section(ELF_STRUCT * elf){
 	int i = 0, ind_max = 0, max_offset = 0;
@@ -97,7 +82,7 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 					
 					/*	Appel de offset_section_update() qui modifie l'offset de toutes
 						les sections qui se trouvent après l'offset de la section actuelle */
-					offset_section_update(i, elf_file2->a_shdr[j].sh_size, elf_file1);
+					maj_offset(elf_file1, i, elf_file2->a_shdr[j].sh_size);
 					
 				}
 			}
@@ -113,7 +98,7 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 		
 			// 	Dans le tableau de booléens, passage à FALSE des sections ajoutées
 			missing[i] = false;
-		
+
 			//	------------------------------------------AJOUT DE L'ENTETE DE LA SECTION------------------------------------------
 			//	Ajout de l'entête de section du fichier 2 après toutes les entêtes de section du fichier 1
 			elf_file1->a_shdr = realloc(elf_file1->a_shdr, sizeof(Elf32_Shdr) * (elf_file1->elf_header->e_shnum + 1));	//	A CONFIRMER
@@ -132,7 +117,7 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			elf_file1->sections_content[elf_file1->elf_header->e_shstrndx] = strcat(elf_file1->sections_content[elf_file1->elf_header->e_shstrndx], get_name(elf_file2, i));	//	A CONFIRMER
 			
 			//	Modification de l'offset de toutes les sections suivant .shstrtab
-			offset_section_update(elf_file1->elf_header->e_shstrndx, strlen(get_name(elf_file2, i)) + 1, elf_file1);
+			maj_offset(elf_file1,elf_file1->elf_header->e_shstrndx, strlen(get_name(elf_file2, i)) + 1);
 			
 			//	------------------------------------------AJOUT DE LA SECTION------------------------------------------			
 			// 	Appel de max_offset_section() qui recherche l'indice de la section d'offset maximum
@@ -149,7 +134,7 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			
 			//	Modification dans le header de l'offset de la première entête de section
 			elf_file1->elf_header->e_shoff += (strlen(get_name(elf_file2, i)) + 1) + elf_file2->a_shdr[i].sh_size;
-							
+
 		}	
 	}
 }

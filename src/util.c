@@ -56,3 +56,16 @@ char* get_name(ELF_STRUCT * elf,int numero){
 	
 	return str;
 }
+
+void maj_offset(ELF_STRUCT * elf, int num, int size) {
+	Elf32_Shdr * shelf = elf->a_shdr;
+	int allign = shelf[num].sh_addralign;
+	
+	for (int i = 0; i < elf->elf_header->e_shnum; i++) {
+		if ((shelf[i].sh_offset > shelf[num].sh_offset) || ((shelf[i].sh_offset == shelf[num].sh_offset) && (i > num))) {
+			shelf[i].sh_offset = shelf[i].sh_offset + size;
+			if ((shelf[i].sh_offset % allign) != 0)
+				shelf[i].sh_offset = shelf[i].sh_offset + (allign - (shelf[i].sh_offset % allign));
+		}
+	}
+}

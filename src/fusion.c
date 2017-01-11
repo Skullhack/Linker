@@ -14,19 +14,6 @@ void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	//fusion_reimp(elf1, elf2);
 }
 
-void maj_offset(ELF_STRUCT * elf, int num, int size) {
-	Elf32_Shdr * shelf = elf->a_shdr;
-	int allign = shelf[num].sh_addralign;
-	
-	for (int i = 0; i < elf->elf_header->e_shnum; i++) {
-		if ((shelf[i].sh_offset > shelf[num].sh_offset) || ((shelf[i].sh_offset == shelf[num].sh_offset) && (i > num))) {
-			shelf[i].sh_offset = shelf[i].sh_offset + size;
-			if ((shelf[i].sh_offset % allign) != 0)
-				shelf[i].sh_offset = shelf[i].sh_offset + (allign - (shelf[i].sh_offset % allign));
-		}
-	}
-}
-
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
 	int i = 0;
 	int j;
