@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
+#include <getopt.h>
 
 #include "global_struct.h"
 #include "init.h"
@@ -87,17 +88,17 @@ void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
-void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
+void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2,char* nSec) {
 	if (elf_struct2 == NULL) {
-		choix_section(elf_struct1);
+		choix_section(elf_struct1,nSec);
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
 			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
-				choix_section(elf_struct1);
+				choix_section(elf_struct1,nSec);
 			} else {
-				choix_section(elf_struct2);
+				choix_section(elf_struct2,nSec);
 			}
 		}
 	}
@@ -142,21 +143,170 @@ void lancer_fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		printf("Un seul fichier en argument, fusion impossible.\n");
 	} else {
-		Fusion(elf_struct1, elf_struct2);
+		//Fusion(elf_struct1, elf_struct2);
 		printf("Fusion terminée.\n");
 	}
 }
 
+ELF_STRUCT* Init_f_elfstruct(char* nomFichier, ELF_STRUCT* elf_struct) {
+	FILE *f = fopen(nomFichier, "r");
+	if (f == NULL) {
+		fprintf(stderr, "Erreur : impossible d'ouvrir le fichier %s en mode lecture\n", nomFichier);
+		return NULL;
+	} 
+
+	elf_struct = malloc( sizeof(ELF_STRUCT) );
+	if (elf_struct == NULL) {
+		fprintf(stderr, "Erreur allocation elf_struct\n");
+		return NULL;
+	} 
+	if ( !init_elf_struct(elf_struct, f) ) {
+		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct));
+		return NULL;
+	}
+	return elf_struct;
+}
+
+void usage(char* name) {
+		printf("%s [OPTION...] [FILE...]\n",name);
+		printf("OPTIONS\n");
+		printf("  -a, --all\n");
+		printf("    Affiche les différentes parties des fichiers\n");
+		printf("  -A, --ALL=N\n");
+		printf("    Affiche les différentes parties des fichiers ainsi que la section de nom ou de numéro N\n");
+
+		printf("\n  -h, --header\n");
+		printf("    Affiche le header des fichiers\n");
+		printf("  -S, --shdr\n");
+		printf("    Affiche le section header des fichiers\n");
+		printf("  -x, --section=N\n");
+		printf("    Affiche la section de nom ou de numéro N des fichiers\n");
+		printf("  -s, --symbole\n");
+		printf("    Affiche la table des symboles des fichiers\n");
+		printf("  -r, --reimp\n");
+		printf("    Affiche la table de réimplantation des fichiers\n");
+
+		printf("\n  -?, --help\n");
+		printf("    Affiche l'aide\n");
+}
+
 int main(int argc, char *argv[]) {
 
-	int choix = 0;
+	/*int choix = 0;
 	FILE *f1 = NULL;
-	FILE *f2 = NULL;
+	FILE *f2 = NULL;*/
 	ELF_STRUCT* elf_struct1 = NULL;
 	ELF_STRUCT* elf_struct2 = NULL;
 
+	if (argc < 3) {
+		usage(argv[0]);
+		return EXIT_FAILURE;
+	}
+
+	/*
+	Gestion des options
+	*/
+	int opt;
+	int affh=0;
+	int affS=0;
+	char* affx=NULL;
+	int affs=0;
+	int affr=0;
+	int fusion=0;
+
+	struct option longopts[] = {
+		{ "ALL", required_argument, NULL, 'A' },
+		{ "all", required_argument, NULL, 'a' },
+		{ "header", no_argument, NULL, 'h' },
+		{ "shdr", no_argument, NULL, 'S' },
+		{ "section", required_argument, NULL, 'x' },
+		{ "symbole", no_argument, NULL, 's' },
+		{ "reimp", no_argument, NULL, 'r' },
+		{ "fusion", no_argument, NULL, 'f' },
+		{ "help", no_argument, NULL, '?' },
+		{ NULL, 0, NULL, 0 }
+	};
+
+	while ( (opt = getopt_long(argc,argv,"aA:hSx:srf?", longopts, NULL)) !=-1) {
+		switch(opt) {
+		//Erreur si on tape ./linker -A [fichier...] il essaye de lire le fichier -A
+		case 'a':
+			affh=1;
+			affS=1;
+			affs=1;
+			affr=1;
+			break;
+		case 'A':
+			affh=1;
+			affS=1;
+			affx=optarg;
+			affs=1;
+			affr=1;
+			break;
+		case 'h':
+			affh=1;
+			break;
+		case 'S':
+			affS=1;
+			break;
+		case 'x':
+			affx=optarg;
+			break;
+		case 's':
+			affs=1;
+			break;
+		case 'r':
+			affr=1;
+			break;
+		case 'f':
+			fusion=1;
+			break;
+		case '?':
+			usage(argv[0]);
+			break;
+		default:
+			fprintf(stderr, "Unrecognized option %c\n", opt);
+			usage(argv[0]);
+			exit(1);
+		}
+	}
+
+	/*Temp, utile que pour l'affichage alors qu'on peut surement l'utiliser tout le temps*/
+	for (int i=optind;i<argc;i++) {
+		elf_struct1 = Init_f_elfstruct(argv[i],elf_struct1);
+		if (elf_struct1!=NULL) {
+			if (affh) {
+				printf("1");
+				affichageHeader(elf_struct1,elf_struct2);
+			}
+			if (affS) {
+				printf("2");
+				affichageSectionHeader(elf_struct1,elf_struct2);
+			}
+			if (affx!=NULL) {
+				printf("entre");
+				affichageContenuSection(elf_struct1,elf_struct2,affx);
+			}
+			if (affs) {
+				printf("4");
+				affichageSymbole(elf_struct1,elf_struct2);
+			}
+			if (affr) {
+				printf("5");
+				affichageReimplantation(elf_struct1,elf_struct2);
+			}
+		}
+		/*Temp, utilisé que pour la fusion de DEUX fichiers*/
+		if (fusion) {
+				elf_struct1 = Init_f_elfstruct(argv[optind],elf_struct1);
+				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
+				lancer_fusion(elf_struct1, elf_struct2);
+			}
+	}
+	
+
 	// Checks for argc
-	if (argc > 3 || argc < 2) {
+	/*if (argc > 3 || argc < 2) {
 		fprintf(stderr, "1 ou 2 arguments autorisés (noms des fichiers objet)\n");
 		return EXIT_FAILURE;
 	}
@@ -218,7 +368,7 @@ int main(int argc, char *argv[]) {
 				affichageSectionHeader(elf_struct1, elf_struct2);
 			break;
 			case 3:
-				affichageContenuSection(elf_struct1, elf_struct2);
+				affichageContenuSection(elf_struct1, elf_struct2,0);
 			break;
 			case 4:
 				affichageSymbole(elf_struct1, elf_struct2);
@@ -239,7 +389,7 @@ int main(int argc, char *argv[]) {
 				printf("Entrez un chiffre de 1 à 8.\n\n");
 			break;
 		}
-	}
+	}*/
 
 	// Sortie propre
 	if (elf_struct2 != NULL)
