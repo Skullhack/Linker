@@ -192,9 +192,9 @@ void usage(char* name) {
 
 int main(int argc, char *argv[]) {
 
-	int choix = 0;
+	/*int choix = 0;
 	FILE *f1 = NULL;
-	FILE *f2 = NULL;
+	FILE *f2 = NULL;*/
 	ELF_STRUCT* elf_struct1 = NULL;
 	ELF_STRUCT* elf_struct2 = NULL;
 
@@ -289,7 +289,7 @@ int main(int argc, char *argv[]) {
 	
 
 	// Checks for argc
-	if (argc > 3 || argc < 2) {
+	/*if (argc > 3 || argc < 2) {
 		fprintf(stderr, "1 ou 2 arguments autorisés (noms des fichiers objet)\n");
 		return EXIT_FAILURE;
 	}
@@ -372,7 +372,7 @@ int main(int argc, char *argv[]) {
 				printf("Entrez un chiffre de 1 à 8.\n\n");
 			break;
 		}
-	}
+	}*/
 
 	// Sortie propre
 	if (elf_struct2 != NULL)

@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 	
-	choix_section(elf_struct);
+	choix_section(elf_struct,"1");
 
 	close_elf_struct(elf_struct);
 
