@@ -7,7 +7,6 @@
 #include "section_elf.h"
 #include "table_symbole.h"
 #include "reimplantation.h"
-/*#include "elf_relocate.h"*/
 
 int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 
@@ -41,10 +40,6 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 		return -1;
 	}
 
-
-
-
-	
 	// Les sections headers sont initialisés, on doit maintenant lire les sections
 	//On a besoin de la taille totale des sections
 	for (i = 0; i < elf_struct->elf_header->e_shnum; i++) {
@@ -80,34 +75,14 @@ int init_elf_struct(ELF_STRUCT* elf_struct, FILE *elf_file) {
 		elf_struct->error_code = ERROR_FILL_A_SHDR;
 		return -1;
 	}
-	/*
-
-	
-	// Now that symb_index is initialized, we can retrieve the number of symb entries
-	nb_symb_entries = get_nb_symb_entries(elf_struct->a_shdr[elf_struct->symb_table_idx]);
-
-	// Allocates memory + init symbol table
-	elf_struct->a_sym = malloc( sizeof(Elf32_Sym) * nb_symb_entries );
-	if (elf_struct->a_sym == NULL) {
-		fprintf(stderr, "Error : symbol table malloc failed. Break.\n");
-		// error code
-		return -1;
-	}
-	if ( read_symbols_array_data(elf_struct) == -1 ) {
-		fprintf(stderr, "Error while reading symbol table. Break.\n");
-		// error code
-		return -1;
-	}*/
 
 	//Réimplantation
 	tab_Reimplantation(elf_struct);
 	
 	// Init error code
-	elf_struct->error_code = 0;
-		
+	elf_struct->error_code = 0;		
 
 	return 1;	
-
 }	
 
 void close_elf_struct(ELF_STRUCT* elf_struct) {
