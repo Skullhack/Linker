@@ -91,20 +91,25 @@ int max_offset_section(ELF_STRUCT * elf) {
 
 //////////////////////////////////
 void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
-	int taille_nom = strlen(nom);
+	int taille_nom = strlen(nom)+1;
 	int shstr_size = elf->a_shdr[elf->elf_header->e_shstrndx].sh_size;
+	int i;
 	
+	nom[taille_nom]='\0';
 	//Modification de l'en-tête de section de shstr
 	elf->a_shdr[elf->elf_header->e_shstrndx].sh_size = elf->a_shdr[elf->elf_header->e_shstrndx].sh_size + taille_nom;
 	
 	//Réallocation de la mémoire pour stocker le nom	
-	elf->sections_content[elf->elf_header->e_shstrndx] = realloc(elf->sections_content[elf->elf_header->e_shstrndx], elf->a_shdr[elf->elf_header->e_shstrndx].sh_size);
+	elf->sections_content[elf->elf_header->e_shstrndx] = realloc(elf->sections_content[elf->elf_header->e_shstrndx], elf->a_shdr[elf->elf_header->e_shstrndx].sh_size+1);
 	
 	//Concaténation du nom dans la shstrtab
-	printf("%s\n" ,nom);
-	for (int i = 0; i < taille_nom; i++) {
+	//printf("%s\n" ,nom);
+	//printf("%d\n",taille_nom);
+	for (i = 0; i < taille_nom; i++) {
 		elf->sections_content[elf->elf_header->e_shstrndx][shstr_size + i+1] = nom[i];
+		//printf("%c\n",nom[i]);
 	}
+	//printf("%s\n", get_name(elf,23));
 	
 	//Mise à jour des offsets suivants la shstrtab
 	maj_offset(elf, elf->elf_header->e_shstrndx, taille_nom);

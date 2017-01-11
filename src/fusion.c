@@ -24,13 +24,14 @@ void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	
 	//Copie de la nouvelle section header
 	elf1->a_shdr[idxsec_max] = elf2->a_shdr[num];
-	
 	//Modifications de la nouvelle section header
 	elf1->a_shdr[idxsec_max].sh_name = elf1->a_shdr[elf1->elf_header->e_shstrndx].sh_size+1;
 	elf1->a_shdr[idxsec_max].sh_offset = elf1->a_shdr[max_offset_section(elf1)].sh_offset + elf1->a_shdr[idxsec_max].sh_size;
 	
 	//Ajout du nom dans shstrtab (via un fonction de util)
 	ajout_nom_section(elf1, get_name(elf2, num));
+	
+	//printf("%d\n",elf1->a_shdr[idxsec_max].sh_type);
 	
 	//Ajout du contenu de la section
 	//ajout_contenu_section(elf1, elf2->sections_content[num]);
@@ -104,21 +105,27 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 		}
 		i++;
 	}
-	
+	printf("\n%d\n",shelf1[17].sh_type);
 	j = 0;
 	while (j < elf2->elf_header->e_shnum) {
-		trouve = 0;
 		if (shelf2[j].sh_type == SHT_PROGBITS) {
 			i = 0;
+			trouve = 0;
 			while (i < elf1->elf_header->e_shnum) {
+				//printf("%d\n",i);
+				//printf("%s & %s | %d = %d\n",get_name(elf1,i),get_name(elf2,j),strcmp(get_name(elf1,i), get_name(elf2,j)) == 0,shelf1[i].sh_type == SHT_PROGBITS);
+				//printf("fichier 1 : %d\n", shelf1[i].sh_type);
+				//printf("fichier 2 : %d\n", shelf2[j].sh_type);
 				if (shelf1[i].sh_type == SHT_PROGBITS && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
 					trouve = 1;
+					
 				}
 				i++;
 			}
-		
+			//printf("%d\n",trouve);
 			if (!trouve) {
 				ajout_section(elf1, elf2, j);
+				//printf("%d\n",shelf1[i].sh_type);
 			}
 		}
 		j++;
