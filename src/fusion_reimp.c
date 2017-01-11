@@ -57,6 +57,14 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 	
 	}
 	
+	// DEBUG
+	for(i = 0 ; i < elf_file2->elf_header->e_shnum; i++){
+	
+		printf("%d : ", i);
+		printf(missing[i] ? "true\n" : "false\n");
+	
+	}
+	
 	// 	-------------------------------PARTIE 1 - FUSION--------------------------------
 
 	/*	Recherche des sections de même type SHT_REL et de même nom dans les 
