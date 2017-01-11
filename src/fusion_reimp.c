@@ -45,17 +45,22 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 	int i = 0, j = 0, ind_sect_max = 0, add_off_sect = 0;
 	
 	/*	Initialisation du tableau de booléens des sections du fichier 2 afin de 
-		marquer celles de type SHT_REL qui ne seront pas fusionnées dans le fichier 1 */
+		marquer celles de type SHT_REL qui ne seront pas fusionnées dans le fichier 1	*/
 	for(i = 0 ; i < elf_file2->elf_header->e_shnum; i++){
 	
-		missing[i] = true;
+		if(elf_file2->a_shdr[i].sh_type == SHT_REL){
+			missing[i] = true;
+		}
+		else{
+			missing[i] = false;
+		}
 	
 	}
 	
 	// 	-------------------------------PARTIE 1 - FUSION--------------------------------
 
 	/*	Recherche des sections de même type SHT_REL et de même nom dans les 
-		fichiers 2 et 1 afin de les fusionner dans le fichier 1 */
+		fichiers 2 et 1 afin de les fusionner dans le fichier 1	*/
 	for(i = 0; i < elf_file1->elf_header->e_shnum; i++){
 		
 		if(elf_file1->a_shdr[i].sh_type == SHT_REL){
@@ -68,7 +73,7 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 					missing[j] = false;
 					
 					/*	Concaténation de la section du fichier 2 à la fin de la section 
-						équivalente dans elf_file1->sections_content[i] */
+						équivalente dans elf_file1->sections_content[i]	*/
 					elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file2->a_shdr[j].sh_size);	//	A CONFIRMER
 					elf_file1->sections_content[i] = strcat(elf_file1->sections_content[i], elf_file2->sections_content[j]);	//	A CONFIRMER
 					
@@ -77,11 +82,11 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 					elf_file1->a_shdr[i].sh_size += elf_file2->a_shdr[j].sh_size;
 			
 					/*	Décallage du offset de la première entête de section qui se
-					 	trouve dans le header */					
+					 	trouve dans le header	*/					
 					elf_file1->elf_header->e_shoff += elf_file2->a_shdr[j].sh_size;
 					
 					/*	Appel de offset_section_update() qui modifie l'offset de toutes
-						les sections qui se trouvent après l'offset de la section actuelle */
+						les sections qui se trouvent après l'offset de la section actuelle	*/
 					maj_offset(elf_file1, i, elf_file2->a_shdr[j].sh_size);
 					
 				}
@@ -94,7 +99,7 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 	//	Parcours du tableau de booléens et ajout des sections marquées à TRUE
 	for(i = 0 ; i < elf_file2->elf_header->e_shnum; i++){
 	
-		if(missing[i] == true){
+		if(elf_file2->a_shdr[i].sh_type == SHT_REL && missing[i] == true){
 		
 			// 	Dans le tableau de booléens, passage à FALSE des sections ajoutées
 			missing[i] = false;
@@ -129,8 +134,8 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_offset = add_off_sect;
 					
 			//	Ajout du contenu de la section du fichier 2 après toutes les autres sections du fichier 1
-			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);
-			memcpy(&(elf_file1->sections_content[elf_file1->elf_header->e_shnum - 1]), &(elf_file2->sections_content[i]), elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);
+			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);	//	A CONFIRMER
+			memcpy(&(elf_file1->sections_content[elf_file1->elf_header->e_shnum - 1]), &(elf_file2->sections_content[i]), elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);	//	A CONFIRMER
 			
 			//	Modification dans le header de l'offset de la première entête de section
 			elf_file1->elf_header->e_shoff += (strlen(get_name(elf_file2, i)) + 1) + elf_file2->a_shdr[i].sh_size;
