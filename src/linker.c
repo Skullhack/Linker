@@ -32,6 +32,52 @@ int GetInteger(const char *prompt, int *i) {
 	return 0;
 }
 
+void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2) {
+	int choix = 0;
+	while (choix != 8) {
+		printf("\nMenu principal\n");
+		printf("--------------------------------------------------\n");
+		printf("1 = afficher le header\n");
+		printf("2 = afficher les headers de section\n");
+		printf("3 = afficher le contenu d'une section\n");
+		printf("4 = afficher la table des symboles\n");
+		printf("5 = afficher la table de réimplantation\n");
+		printf("6 = affichage complet des informations\n");
+		printf("7 = effectuer la fusion des fichiers objets donnés\n");
+		printf("8 = quitter le programme\n\n");
+		GetInteger("Entrez un chiffre proposé : \n", &choix);
+		switch(choix) {
+			case 1:
+				affichageHeader(elf_struct1, elf_struct2);
+			break;
+			case 2:
+				affichageSectionHeader(elf_struct1, elf_struct2);
+			break;
+			case 3:
+				affichageContenuSection(elf_struct1, elf_struct2, 0);
+			break;
+			case 4:
+				affichageSymbole(elf_struct1, elf_struct2);
+			break;
+			case 5:
+				affichageReimplantation(elf_struct1, elf_struct2);
+			break;
+			case 6:
+				affichageComplet(elf_struct1, elf_struct2);
+			break;
+			case 7:
+				lancer_fusion(elf_struct1, elf_struct2);
+			break;
+			case 8:
+				printf("Fermeture du programme\n");
+				exit(1);
+			break;
+			default:
+				printf("Entrez un chiffre de 1 à 8.\n\n");
+			break;
+		}
+	}
+}
 
 void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	//à compléter	
@@ -143,7 +189,7 @@ void lancer_fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		printf("Un seul fichier en argument, fusion impossible.\n");
 	} else {
-		//Fusion(elf_struct1, elf_struct2);
+		Fusion(elf_struct1, elf_struct2);
 		printf("Fusion terminée.\n");
 	}
 }
@@ -185,6 +231,8 @@ void usage(char* name) {
 		printf("    Affiche la table des symboles des fichiers\n");
 		printf("  -r, --reimp\n");
 		printf("    Affiche la table de réimplantation des fichiers\n");
+		printf("  -m, --menu\n");
+		printf("    Lance le programme en mode menu\n");
 
 		printf("\n  -?, --help\n");
 		printf("    Affiche l'aide\n");
@@ -213,10 +261,12 @@ int main(int argc, char *argv[]) {
 	int affs=0;
 	int affr=0;
 	int fusion=0;
+	int affM=0;
 
 	struct option longopts[] = {
 		{ "ALL", required_argument, NULL, 'A' },
 		{ "all", required_argument, NULL, 'a' },
+		{ "menu", no_argument, NULL, 'm' },
 		{ "header", no_argument, NULL, 'h' },
 		{ "shdr", no_argument, NULL, 'S' },
 		{ "section", required_argument, NULL, 'x' },
@@ -264,6 +314,9 @@ int main(int argc, char *argv[]) {
 		case '?':
 			usage(argv[0]);
 			break;
+		case 'm':
+			affM = 1;
+			break;
 		default:
 			fprintf(stderr, "Unrecognized option %c\n", opt);
 			usage(argv[0]);
@@ -276,23 +329,18 @@ int main(int argc, char *argv[]) {
 		elf_struct1 = Init_f_elfstruct(argv[i],elf_struct1);
 		if (elf_struct1!=NULL) {
 			if (affh) {
-				printf("1");
 				affichageHeader(elf_struct1,elf_struct2);
 			}
 			if (affS) {
-				printf("2");
 				affichageSectionHeader(elf_struct1,elf_struct2);
 			}
 			if (affx!=NULL) {
-				printf("entre");
 				affichageContenuSection(elf_struct1,elf_struct2,affx);
 			}
 			if (affs) {
-				printf("4");
 				affichageSymbole(elf_struct1,elf_struct2);
 			}
 			if (affr) {
-				printf("5");
 				affichageReimplantation(elf_struct1,elf_struct2);
 			}
 		}
@@ -301,96 +349,14 @@ int main(int argc, char *argv[]) {
 				elf_struct1 = Init_f_elfstruct(argv[optind],elf_struct1);
 				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
 				lancer_fusion(elf_struct1, elf_struct2);
-			}
+		}
+		
+		if (affM) {
+				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
+				menu(elf_struct1, elf_struct2);
+		}
 	}
 	
-
-	// Checks for argc
-	/*if (argc > 3 || argc < 2) {
-		fprintf(stderr, "1 ou 2 arguments autorisés (noms des fichiers objet)\n");
-		return EXIT_FAILURE;
-	}
-
-	if (argc > 2) {
-		f2 = fopen(argv[2], "r");
-		if (f2 == NULL) {
-			fprintf(stderr, "Erreur : impossible d'ouvrir le fichier %s en mode lecture\n", argv[2]);
-			return EXIT_FAILURE;
-		}
-
-		elf_struct2 = malloc( sizeof(ELF_STRUCT) );
-		if (elf_struct2 == NULL) {
-			fprintf(stderr, "Erreur allocation elf_struct\n");
-			return EXIT_FAILURE;
-		}
-
-		if ( !init_elf_struct(elf_struct2, f2) ) {
-			fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct2));
-			return EXIT_FAILURE;
-		}
-	}
-
-	f1 = fopen(argv[1], "r");
-	if (f1 == NULL) {
-		fprintf(stderr, "Erreur : impossible d'ouvrir le fichier %s en mode lecture\n", argv[1]);
-		return EXIT_FAILURE;
-	}
-
-	elf_struct1 = malloc( sizeof(ELF_STRUCT) );
-	if (elf_struct1 == NULL) {
-		fprintf(stderr, "Erreur allocation elf_struct\n");
-		return EXIT_FAILURE;
-	}
-
-	if ( !init_elf_struct(elf_struct1, f1) ) {
-		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct1));
-		return EXIT_FAILURE;
-	}
-	
-	choix = 0;
-	while (choix != 8) {
-		printf("\nMenu principal\n");
-		printf("--------------------------------------------------\n");
-		printf("1 = afficher le header\n");
-		printf("2 = afficher les headers de section\n");
-		printf("3 = afficher le contenu d'une section\n");
-		printf("4 = afficher la table des symboles\n");
-		printf("5 = afficher la table de réimplantation\n");
-		printf("6 = affichage complet des informations\n");
-		printf("7 = effectuer la fusion des fichiers objets donnés\n");
-		printf("8 = quitter le programme\n\n");
-		GetInteger("Entrez un chiffre proposé : \n", &choix);
-		switch(choix) {
-			case 1:
-				affichageHeader(elf_struct1, elf_struct2);
-			break;
-			case 2:
-				affichageSectionHeader(elf_struct1, elf_struct2);
-			break;
-			case 3:
-				affichageContenuSection(elf_struct1, elf_struct2,0);
-			break;
-			case 4:
-				affichageSymbole(elf_struct1, elf_struct2);
-			break;
-			case 5:
-				affichageReimplantation(elf_struct1, elf_struct2);
-			break;
-			case 6:
-				affichageComplet(elf_struct1, elf_struct2);
-			break;
-			case 7:
-				lancer_fusion(elf_struct1, elf_struct2);
-			break;
-			case 8:
-				printf("Fermeture du programme\n");
-			break;
-			default:
-				printf("Entrez un chiffre de 1 à 8.\n\n");
-			break;
-		}
-	}*/
-
 	// Sortie propre
 	if (elf_struct2 != NULL)
 		close_elf_struct(elf_struct2);

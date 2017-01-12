@@ -31,10 +31,8 @@ void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	//Ajout du nom dans shstrtab (via un fonction de util)
 	ajout_nom_section(elf1, get_name(elf2, num));
 	
-	//printf("%d\n",elf1->a_shdr[idxsec_max].sh_type);
-	
 	//Ajout du contenu de la section
-	//ajout_contenu_section(elf1, elf2->sections_content[num]);
+	ajout_contenu_section(elf1, elf2->sections_content[num]);
 }
 
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
@@ -78,23 +76,6 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					cont_section2 = elf2->sections_content[j];
 					seccat(cont_section1, cont_section2, cont_final, shelf1[i].sh_size, shelf2[j].sh_size);
 					
-					/*printf("Début section %s\n", get_name(elf1,i));
-					for (int k = 0; k < shelf1[i].sh_size; k++) {
-						varAff = cont_section1[k];
-						printf("%x",varAff);
-					}
-					printf("\n");
-					for (int k = 0; k < shelf2[j].sh_size; k++) {
-						varAff = cont_section2[k];
-						printf("%x",varAff);
-					}
-					printf("\n");
-					for (int k = 0; k < shelf1[i].sh_size+shelf2[j].sh_size; k++) {
-						varAff = cont_final[k];
-						printf("%x",varAff);
-					}
-					printf("\nFin section %s\n\n", get_name(elf1,i));*/
-					
 					elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
 					elf1->sections_content[i] = realloc(elf1->sections_content[i], elf1->a_shdr[i].sh_size);
 					elf1->sections_content[i] = cont_final;
@@ -105,17 +86,13 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 		}
 		i++;
 	}
-	printf("\n%d\n",shelf1[17].sh_type);
 	j = 0;
+	
 	while (j < elf2->elf_header->e_shnum) {
 		if (shelf2[j].sh_type == SHT_PROGBITS) {
 			i = 0;
 			trouve = 0;
 			while (i < elf1->elf_header->e_shnum) {
-				//printf("%d\n",i);
-				//printf("%s & %s | %d = %d\n",get_name(elf1,i),get_name(elf2,j),strcmp(get_name(elf1,i), get_name(elf2,j)) == 0,shelf1[i].sh_type == SHT_PROGBITS);
-				//printf("fichier 1 : %d\n", shelf1[i].sh_type);
-				//printf("fichier 2 : %d\n", shelf2[j].sh_type);
 				if (shelf1[i].sh_type == SHT_PROGBITS && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
 					trouve = 1;
 					
@@ -125,7 +102,6 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 			//printf("%d\n",trouve);
 			if (!trouve) {
 				ajout_section(elf1, elf2, j);
-				//printf("%d\n",shelf1[i].sh_type);
 			}
 		}
 		j++;

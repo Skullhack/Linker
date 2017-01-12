@@ -4,6 +4,7 @@
 #include "global_struct.h"
 
 int GetInteger(const char *prompt, int *i);
+void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2); 
 void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2);
 void affichageHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2);
 void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2);
