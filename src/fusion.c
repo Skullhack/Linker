@@ -10,26 +10,31 @@
 #include "fusion_reimp.h"
 
 void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
-	//fusion_section(elf1, elf2);
-	fusion_reimp(elf1, elf2);
+	fusion_section(elf1, elf2);
+	//fusion_reimp(elf1, elf2);
 }
 
-/*void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
-	int offset_supp = 0;
-	
+void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	//Incrémentation du nombre de section
 	elf1->elf_header->e_shnum++;
-	int idxsec_max
+	int idxsec_max = elf1->elf_header->e_shnum-1;
 	
 	//Réallocation de l'espace alloué aux sections headers
 	elf1->a_shdr = realloc(elf1->a_shdr, sizeof(Elf32_Shdr)*elf1->elf_header->e_shnum);
 	
 	//Copie de la nouvelle section header
-	elf1->a_shdr[e_shnum-1] = elf2->a_shdr[num];
-	
+	elf1->a_shdr[idxsec_max] = elf2->a_shdr[num];
 	//Modifications de la nouvelle section header
-	elf1->a_shdr[e_shnum-1].sh_name = elf1->a_shdr[elf1->elf_header->e_shstrndx].sh_size+1;
-	elf1->a_shdr[e_shnum-1]
+	elf1->a_shdr[idxsec_max].sh_name = elf1->a_shdr[elf1->elf_header->e_shstrndx].sh_size+1;
+	elf1->a_shdr[idxsec_max].sh_offset = elf1->a_shdr[max_offset_section(elf1)].sh_offset + elf1->a_shdr[idxsec_max].sh_size;
+	
+	//Ajout du nom dans shstrtab (via un fonction de util)
+	ajout_nom_section(elf1, get_name(elf2, num));
+	
+	//printf("%d\n",elf1->a_shdr[idxsec_max].sh_type);
+	
+	//Ajout du contenu de la section
+	//ajout_contenu_section(elf1, elf2->sections_content[num]);
 }
 
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
@@ -73,7 +78,7 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					cont_section2 = elf2->sections_content[j];
 					seccat(cont_section1, cont_section2, cont_final, shelf1[i].sh_size, shelf2[j].sh_size);
 					
-					//printf("Début section %s\n", get_name(elf1,i));
+					/*printf("Début section %s\n", get_name(elf1,i));
 					for (int k = 0; k < shelf1[i].sh_size; k++) {
 						varAff = cont_section1[k];
 						printf("%x",varAff);
@@ -90,7 +95,7 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					}
 					printf("\nFin section %s\n\n", get_name(elf1,i));*/
 					
-					/*elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
+					elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
 					elf1->sections_content[i] = realloc(elf1->sections_content[i], elf1->a_shdr[i].sh_size);
 					elf1->sections_content[i] = cont_final;
 					maj_offset(elf1, i, shelf2[j].sh_size);
@@ -100,43 +105,29 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 		}
 		i++;
 	}
-	
+	printf("\n%d\n",shelf1[17].sh_type);
 	j = 0;
 	while (j < elf2->elf_header->e_shnum) {
 		if (shelf2[j].sh_type == SHT_PROGBITS) {
-		i = 0;
-		trouve = 0;
-		while (i < elf1->elf_header->e_shnum) {
-			if (shelf1[i].sh_type == SHT_PROGBITS && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
-				trouve = 1;
+			i = 0;
+			trouve = 0;
+			while (i < elf1->elf_header->e_shnum) {
+				//printf("%d\n",i);
+				//printf("%s & %s | %d = %d\n",get_name(elf1,i),get_name(elf2,j),strcmp(get_name(elf1,i), get_name(elf2,j)) == 0,shelf1[i].sh_type == SHT_PROGBITS);
+				//printf("fichier 1 : %d\n", shelf1[i].sh_type);
+				//printf("fichier 2 : %d\n", shelf2[j].sh_type);
+				if (shelf1[i].sh_type == SHT_PROGBITS && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
+					trouve = 1;
+					
+				}
+				i++;
+			}
+			//printf("%d\n",trouve);
+			if (!trouve) {
+				ajout_section(elf1, elf2, j);
+				//printf("%d\n",shelf1[i].sh_type);
 			}
 		}
-		
-		if (!trouve) {
-			ajout_section(elf1, elf2, j);
-		}
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-}*/
-
+		j++;
+	}	
+}
