@@ -93,9 +93,8 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 			i = 0;
 			trouve = 0;
 			while (i < elf1->elf_header->e_shnum) {
-				if (shelf1[i].sh_type == SHT_PROGBITS && strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
+				if (strcmp(get_name(elf1,i), get_name(elf2,j)) == 0) {
 					trouve = 1;
-					
 				}
 				i++;
 			}

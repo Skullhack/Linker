@@ -93,9 +93,10 @@ int max_offset_section(ELF_STRUCT * elf) {
 
 //////////////////////////////////
 void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
-	int taille_nom = strlen(nom)+1;
+	int taille_nom = strlen(nom)+2;
 	int shstr_size = elf->a_shdr[elf->elf_header->e_shstrndx].sh_size;
 	int i;
+	nom[taille_nom] = '\0';
 	
 	//Modification de l'en-tête de section de shstr
 	elf->a_shdr[elf->elf_header->e_shstrndx].sh_size = elf->a_shdr[elf->elf_header->e_shstrndx].sh_size + taille_nom;
@@ -105,7 +106,7 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
 	
 	//Concaténation du nom dans la shstrtab
 	for (i = 0; i < taille_nom; i++) {
-		elf->sections_content[elf->elf_header->e_shstrndx][shstr_size + i+1] = nom[i];
+		elf->sections_content[elf->elf_header->e_shstrndx][shstr_size + i + 1] = nom[i];
 	}
 	
 	//Mise à jour des offsets suivants la shstrtab
