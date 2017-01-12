@@ -290,7 +290,7 @@ int main(int argc, char *argv[]) {
 		{ NULL, 0, NULL, 0 }
 	};
 
-	while ( (opt = getopt_long(argc,argv,"aA:hSx:srf?", longopts, NULL)) !=-1) {
+	while ( (opt = getopt_long(argc,argv,"aA:hmSx:srf?", longopts, NULL)) !=-1) {
 		switch(opt) {
 		//Erreur si on tape ./linker -A [fichier...] il essaye de lire le fichier -A
 		case 'a':
@@ -359,7 +359,6 @@ int main(int argc, char *argv[]) {
 		}
 		/*Temp, utilisé que pour la fusion de DEUX fichiers*/
 		if (fusion) {
-				elf_struct1 = Init_f_elfstruct(argv[optind],elf_struct1);
 				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
 				lancer_fusion(elf_struct1, elf_struct2);
 		}
