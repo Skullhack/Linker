@@ -133,8 +133,7 @@ void afficher_table(ELF_STRUCT * elf){
 			j=-1;	
 			do{
 				j += 1;
-				symb_name[j] = fgetc(elf->elf_file);
-				//printf("le caractère est : %c\n", symb_name[j]);			
+				symb_name[j] = fgetc(elf->elf_file);		
 			}while(symb_name[j] != '\0');
 			
 			printf("%-30s║\n", symb_name);

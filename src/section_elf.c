@@ -7,19 +7,9 @@
 Lance l'affichage de la section N°nSec ou de nom nSec
 */
 int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
-	/*printf("Quelle section afficher ?\n");
-	
-	char sec[100]; */
 	int nbSection = elf_struct->elf_header->e_shnum;
 
-	/*printf("Saisir le numéro (la recherche par nom n'est pas implanté pour le moment...) : ");
-	fgets(sec, sizeof(sec),stdin);*/
-
-	//if (sec[0]=='.') { //a terminer, si le nom est saisie.
-	if (nSec[0]=='.') {
-		//char secName[strlen(sec)-1];
-		//memcpy(secName,sec,strlen(sec)-1);
-		
+	if (nSec[0]=='.') {		
 		int nbAffiche=0;
 
 		int nbSection = elf_struct->elf_header->e_shnum;

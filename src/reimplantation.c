@@ -33,8 +33,6 @@ int tab_Reimplantation(ELF_STRUCT * elf){
 
 	int offset =0;
 
-	//int tab_name =0;
-
 
 	elf->tab_reimplant = malloc(sizeof(char));
 

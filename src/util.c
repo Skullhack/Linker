@@ -167,10 +167,3 @@ void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
 		j++;
 	}
 }
-
-
-
-
-
-
-
