@@ -40,14 +40,6 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 	
 	}
 	
-	// DEBUG
-	for(i = 0 ; i < elf_file2->elf_header->e_shnum; i++){
-	
-		printf("%d : ", i);
-		printf(missing[i] ? "true\n" : "false\n");
-	
-	}
-	
 	// 	-------------------------------PARTIE 1 - FUSION--------------------------------
 
 	/*	Recherche des sections de même type SHT_REL et de même nom dans les 
@@ -105,24 +97,14 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			//	Modification du sh_name de la nouvelle section ajoutée
 			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name = elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size;
 			
-			
-			FILE * g;			
-			g = fopen("shstrtab_avant.txt", "w");			
-			for(j = 0; j < elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size; j++){
-				fprintf(g, "%c", elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][j]);			
-			}			
-			fclose(g);
-			
 			//	Récupération du nom de la section à ajouter
 			char nom_section[strlen(get_name(elf_file2, i))];
 			strcpy(nom_section, get_name(elf_file2, i));
-			printf("nom_section %s\n", nom_section);
 			//nom_section = get_name(elf_file2, i);
 			
 			// 	Modification du size de sh_strtab (le +1 correspond au caractère '\0')
 			elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size += strlen(get_name(elf_file2, i)) + 1;
 			
-			//	BUG ICI
 			//	Concaténation du nom de la section à la fin de .shstrtab
 			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + (strlen(get_name(elf_file2, i))+1) );	//	A CONFIRMER
 			//elf_file1->sections_content[elf_file1->elf_header->e_shstrndx] = strcat(elf_file1->sections_content[elf_file1->elf_header->e_shstrndx], get_name(elf_file2, i));	//	PAS POSSIBLE
@@ -132,13 +114,6 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			}
 			
 			elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name + j] = '\0';		
-			
-			FILE * f;			
-			f = fopen("shstrtab_apres.txt", "w");			
-			for(j = 0; j < elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size; j++){
-				fprintf(f, "%c", elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][j]);			
-			}			
-			fclose(f);
 			
 			
 			//	Modification de l'offset de toutes les sections suivant .shstrtab
