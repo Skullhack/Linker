@@ -8,7 +8,7 @@ Demande le numéro ou le nom de la section à afficher avant de lancer l'afficha
 */
 int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
 	/*printf("Quelle section afficher ?\n");
-
+	
 	char sec[100]; */
 	int nbSection = elf_struct->elf_header->e_shnum;
 
@@ -16,7 +16,7 @@ int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
 	fgets(sec, sizeof(sec),stdin);*/
 
 	//if (sec[0]=='.') { //a terminer, si le nom est saisie.
-		if (nSec[0]=='.') {
+	if (nSec[0]=='.') {
 		//char secName[strlen(sec)-1];
 		//memcpy(secName,sec,strlen(sec)-1);
 		
@@ -36,18 +36,16 @@ int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
 		if (nbAffiche==0) {
 			printf("La section %s n'existe pas.\n",nSec);
 		}
-	//} else if (sec[0]!='0' && atoi(sec)==0) {
+	} else if (*nSec < nbSection) {
+		display_section(elf_struct,*nSec);
 	} else if (nSec[0]!='0' && atoi(nSec)==0) {
 			printf("Le nom saisie n'est pas valide\n");
 			return -1;
 	} else {
-		//if (atoi(sec)>=nbSection || atoi(sec)<0) {
 		if (atoi(nSec)>=nbSection || atoi(nSec)<0) {
-			//printf("La section %d n'existe pas.\n",atoi(sec));
 			printf("La section %d n'existe pas.\n",atoi(nSec));
 			return -1;
 		}
-		//display_section(elf_struct,atoi(sec));
 		display_section(elf_struct,atoi(nSec));
 	}
 	return 0;
@@ -119,5 +117,4 @@ int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, char* section_cont
 	}
 
 	return 1;
-
 }

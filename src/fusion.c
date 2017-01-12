@@ -32,7 +32,7 @@ void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	ajout_nom_section(elf1, get_name(elf2, num));
 	
 	//Ajout du contenu de la section
-	ajout_contenu_section(elf1, elf2->sections_content[num]);
+	//ajout_contenu_section(elf1, elf2->sections_content[num]);
 }
 
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {

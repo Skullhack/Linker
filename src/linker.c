@@ -34,6 +34,7 @@ int GetInteger(const char *prompt, int *i) {
 
 void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2) {
 	int choix = 0;
+	int sec = 0;
 	while (choix != 8) {
 		printf("\nMenu principal\n");
 		printf("--------------------------------------------------\n");
@@ -54,7 +55,10 @@ void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2) {
 				affichageSectionHeader(elf_struct1, elf_struct2);
 			break;
 			case 3:
-				affichageContenuSection(elf_struct1, elf_struct2, 0);
+				sec = 0;
+				GetInteger("Quel section ? (numéro)\n", &sec);
+				char s = sec;
+				affichageContenuSection(elf_struct1, elf_struct2, &s);
 			break;
 			case 4:
 				affichageSymbole(elf_struct1, elf_struct2);
@@ -134,7 +138,7 @@ void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
-void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2,char* nSec) {
+void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2, char* nSec) {
 	if (elf_struct2 == NULL) {
 		choix_section(elf_struct1,nSec);
 	} else {
