@@ -224,6 +224,7 @@ ELF_STRUCT* Init_f_elfstruct(char* nomFichier, ELF_STRUCT* elf_struct) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct));
 		return NULL;
 	}
+	
 	return elf_struct;
 }
 
@@ -253,10 +254,6 @@ void usage(char* name) {
 }
 
 int main(int argc, char *argv[]) {
-
-	/*int choix = 0;
-	FILE *f1 = NULL;
-	FILE *f2 = NULL;*/
 	ELF_STRUCT* elf_struct1 = NULL;
 	ELF_STRUCT* elf_struct2 = NULL;
 
