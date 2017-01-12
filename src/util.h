@@ -31,25 +31,85 @@ Contact: Guillaume.Huard@imag.fr
 
 int is_big_endian();
 
-//If we need to reverse the bytes, return 1
+/**
+	*BRIEF : Fait un reverse 
+	*PARAM : ei_data:
+						variable à reverse
+	*RETURN: version reverse de la variable.
+**/
 int need_reverse(unsigned char ei_data);
 
-// Renvoi le nom de la section
+/**
+	*BRIEF : Renvoi un le nom d'un section header
+	*PARAM : elf:
+						structure à lire
+					 numero:
+						numéro du section header a lire le nom
+	*RETURN: Une chaine de caractère avec le nom.
+**/
 char* get_name(ELF_STRUCT * elf,int numero);
 
 //Décale l'offset des sections après la section num de size
+/**
+	*BRIEF : Met a jour les offset des sections fusionnées (dans le section header)
+	*PARAM : elf:
+						structure à mettre à jour
+					 num:
+						numéro de la premiere section à mettre à jour
+					 size:
+						taille de la section
+	*RETURN: void. Mise à jour seulement
+**/
 void maj_offset(ELF_STRUCT * elf, int num, int size);
 
 //Renvoie l'indice de la section d'offset maximum
+/**
+	*BRIEF : Renvoie l'indice de la section d'offset maximum
+	*PARAM : elf:
+						structure à lire
+	*RETURN: l'indice de cette section
+**/
 int max_offset_section(ELF_STRUCT * elf);
 
 //Ajoute un nom de section dans la shstrtab de la structure
+/**
+	*BRIEF : Ajoute un nom de section dans la shstrtab de la structure
+	*PARAM : elf:
+						structure à modifier
+					 nom:
+						Nom de la section à ajouter
+	*RETURN: void. Ajout seulement
+**/
 void ajout_nom_section(ELF_STRUCT * elf, char * nom);
 
 //Ajoute le contenu de la section dans la structure elf
+/**
+	*BRIEF : Ajoute le contenu de la section dans la structure elf
+	*PARAM : elf:
+						structure où mettre le contenu
+					 elf2:
+						structure où lire le contenu
+					 num:
+						Numéro de la section content à ajouter
+	*RETURN: void. Ajout seulement
+**/
 void ajout_contenu_section(ELF_STRUCT * elf, ELF_STRUCT * elf2, int num);
 
 //Concatène le contenue des sections
+/**
+	*BRIEF : Concatène le contenue des sections
+	*PARAM : s1:
+						Contenu de la premiere section
+					 s2:
+						Contenu de la deuxieme section
+					 sf:
+						Concaténation des deux section
+					 size1:
+						Taille de la premiere section
+					 size2
+						Taille de la seconde section
+	*RETURN: void. La chaine concaténée est sf
+**/
 void seccat(char * s1, char * s2, char * sf, int size1, int size2);
 
 #define reverse_2(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))

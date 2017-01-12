@@ -16,6 +16,143 @@
 #include "fusion.h"
 #include "util.h"
 
+
+
+int main(int argc, char *argv[]) {
+	ELF_STRUCT* elf_struct1 = NULL;
+	ELF_STRUCT* elf_struct2 = NULL;
+
+	if (argc < 3) {
+		usage(argv[0]);
+		return EXIT_FAILURE;
+	}
+
+	/*
+	Gestion des options
+	*/
+	int opt; //Contien le caractère mis en option (apres le -)
+	/*
+	Variable servant a retenir quelles options sont entrées.
+	*/
+	int affh=0;
+	int affS=0;
+	char* affx=NULL; //Contiendra le numéro eventuel de la section_content à afficher
+	int affs=0;
+	int affr=0;
+	int fusion=0;
+	int affM=0;
+
+	struct option longopts[] = {
+		{ "ALL", required_argument, NULL, 'A' },
+		{ "all", required_argument, NULL, 'a' },
+		{ "menu", no_argument, NULL, 'm' },
+		{ "header", no_argument, NULL, 'h' },
+		{ "shdr", no_argument, NULL, 'S' },
+		{ "section", required_argument, NULL, 'x' },
+		{ "symbole", no_argument, NULL, 's' },
+		{ "reimp", no_argument, NULL, 'r' },
+		{ "fusion", no_argument, NULL, 'f' },
+		{ "help", no_argument, NULL, '?' },
+		{ NULL, 0, NULL, 0 }
+	};
+
+	while ( (opt = getopt_long(argc,argv,"aA:hmSx:srf?", longopts, NULL)) !=-1) {
+		switch(opt) {
+		//Erreur si on tape ./linker -A [fichier...] il essaye de lire le fichier -A
+		case 'a':
+			affh=1;
+			affS=1;
+			affs=1;
+			affr=1;
+			break;
+		case 'A':
+			affh=1;
+			affS=1;
+			affx=optarg;
+			affs=1;
+			affr=1;
+			break;
+		case 'h':
+			affh=1;
+			break;
+		case 'S':
+			affS=1;
+			break;
+		case 'x':
+			affx=optarg;
+			break;
+		case 's':
+			affs=1;
+			break;
+		case 'r':
+			affr=1;
+			break;
+		case 'f':
+			fusion=1;
+			break;
+		case 'm':
+			affM = 1;
+			break;
+
+		case '?':
+			usage(argv[0]);
+			break;
+		default:
+			fprintf(stderr, "Unrecognized option %c\n", opt);
+			usage(argv[0]);
+			exit(1);
+		}
+	}
+	/*
+	Option retenu, maintenant on traite.
+	*/
+
+	/*Temp, utile que pour l'affichage alors qu'on peut surement l'utiliser tout le temps*/
+	//On boucle sur tous les fichiers entrés
+	for (int i=optind;i<argc;i++) {
+		elf_struct1 = Init_f_elfstruct(argv[i],elf_struct1);
+		if (elf_struct1!=NULL) {
+			if (affh) {
+				affichageHeader(elf_struct1,elf_struct2);
+			}
+			if (affS) {
+				affichageSectionHeader(elf_struct1,elf_struct2);
+			}
+			if (affx!=NULL) {
+				affichageContenuSection(elf_struct1,elf_struct2,affx);
+			}
+			if (affs) {
+				affichageSymbole(elf_struct1,elf_struct2);
+			}
+			if (affr) {
+				affichageReimplantation(elf_struct1,elf_struct2);
+			}
+		}
+		/*Temp, utilisé que pour la fusion de DEUX fichiers*/
+		if (fusion) {
+				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
+				lancer_fusion(elf_struct1, elf_struct2);
+		}
+		
+		if (affM) {
+				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
+				menu(elf_struct1, elf_struct2);
+		}
+	}
+	
+	// Sortie propre
+	if (elf_struct2 != NULL)
+		close_elf_struct(elf_struct2);
+	close_elf_struct(elf_struct1);
+
+	return EXIT_SUCCESS;
+
+}
+
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int GetInteger(const char *prompt, int *i) {
 	int Invalid = 0;
 	int EndIndex;
@@ -32,6 +169,9 @@ int GetInteger(const char *prompt, int *i) {
 	return 0;
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2) {
 	int choix = 0;
 	int sec = 0;
@@ -88,12 +228,16 @@ void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2) {
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
-	//à compléter	
 	if (elf_struct2 == NULL) {
 		display_header(elf_struct1->elf_header);
 		Affichage_section(elf_struct1);
-		printf("Suite en cours");
+		afficher_table(elf_struct1);
+		Affichage_Rel(elf_struct1);
+		Affichage_Rela(elf_struct1);
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
@@ -115,6 +259,9 @@ void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void affichageHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		display_header(elf_struct1->elf_header);
@@ -131,6 +278,9 @@ void affichageHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		Affichage_section(elf_struct1);
@@ -147,6 +297,9 @@ void affichageSectionHeader(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2, char* nSec) {
 	if (elf_struct2 == NULL) {
 		choix_section(elf_struct1,nSec);
@@ -163,6 +316,9 @@ void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2, c
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		afficher_table(elf_struct1);
@@ -179,6 +335,9 @@ void affichageSymbole(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void affichageReimplantation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		Affichage_Rel(elf_struct1);
@@ -198,6 +357,9 @@ void affichageReimplantation(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void lancer_fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	if (elf_struct2 == NULL) {
 		printf("Un seul fichier en argument, fusion impossible.\n");
@@ -207,6 +369,9 @@ void lancer_fusion(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 	}
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ELF_STRUCT* Init_f_elfstruct(char* nomFichier, ELF_STRUCT* elf_struct) {
 	FILE *f = fopen(nomFichier, "r");
 	if (f == NULL) {
@@ -223,9 +388,14 @@ ELF_STRUCT* Init_f_elfstruct(char* nomFichier, ELF_STRUCT* elf_struct) {
 		fprintf(stderr, "Erreur d'initialisation : %s", get_error(elf_struct));
 		return NULL;
 	}
+	
 	return elf_struct;
 }
 
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renvoi le nombre ecrit dans la console
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void usage(char* name) {
 		printf("%s [OPTION...] [FILE...]\n",name);
 		printf("OPTIONS\n");
@@ -249,132 +419,4 @@ void usage(char* name) {
 
 		printf("\n  -?, --help\n");
 		printf("    Affiche l'aide\n");
-}
-
-int main(int argc, char *argv[]) {
-
-	/*int choix = 0;
-	FILE *f1 = NULL;
-	FILE *f2 = NULL;*/
-	ELF_STRUCT* elf_struct1 = NULL;
-	ELF_STRUCT* elf_struct2 = NULL;
-
-	if (argc < 3) {
-		usage(argv[0]);
-		return EXIT_FAILURE;
-	}
-
-	/*
-	Gestion des options
-	*/
-	int opt;
-	int affh=0;
-	int affS=0;
-	char* affx=NULL;
-	int affs=0;
-	int affr=0;
-	int fusion=0;
-	int affM=0;
-
-	struct option longopts[] = {
-		{ "ALL", required_argument, NULL, 'A' },
-		{ "all", required_argument, NULL, 'a' },
-		{ "menu", no_argument, NULL, 'm' },
-		{ "header", no_argument, NULL, 'h' },
-		{ "shdr", no_argument, NULL, 'S' },
-		{ "section", required_argument, NULL, 'x' },
-		{ "symbole", no_argument, NULL, 's' },
-		{ "reimp", no_argument, NULL, 'r' },
-		{ "fusion", no_argument, NULL, 'f' },
-		{ "help", no_argument, NULL, '?' },
-		{ NULL, 0, NULL, 0 }
-	};
-
-	while ( (opt = getopt_long(argc,argv,"aA:hSx:srf?", longopts, NULL)) !=-1) {
-		switch(opt) {
-		//Erreur si on tape ./linker -A [fichier...] il essaye de lire le fichier -A
-		case 'a':
-			affh=1;
-			affS=1;
-			affs=1;
-			affr=1;
-			break;
-		case 'A':
-			affh=1;
-			affS=1;
-			affx=optarg;
-			affs=1;
-			affr=1;
-			break;
-		case 'h':
-			affh=1;
-			break;
-		case 'S':
-			affS=1;
-			break;
-		case 'x':
-			affx=optarg;
-			break;
-		case 's':
-			affs=1;
-			break;
-		case 'r':
-			affr=1;
-			break;
-		case 'f':
-			fusion=1;
-			break;
-		case '?':
-			usage(argv[0]);
-			break;
-		case 'm':
-			affM = 1;
-			break;
-		default:
-			fprintf(stderr, "Unrecognized option %c\n", opt);
-			usage(argv[0]);
-			exit(1);
-		}
-	}
-
-	/*Temp, utile que pour l'affichage alors qu'on peut surement l'utiliser tout le temps*/
-	for (int i=optind;i<argc;i++) {
-		elf_struct1 = Init_f_elfstruct(argv[i],elf_struct1);
-		if (elf_struct1!=NULL) {
-			if (affh) {
-				affichageHeader(elf_struct1,elf_struct2);
-			}
-			if (affS) {
-				affichageSectionHeader(elf_struct1,elf_struct2);
-			}
-			if (affx!=NULL) {
-				affichageContenuSection(elf_struct1,elf_struct2,affx);
-			}
-			if (affs) {
-				affichageSymbole(elf_struct1,elf_struct2);
-			}
-			if (affr) {
-				affichageReimplantation(elf_struct1,elf_struct2);
-			}
-		}
-		/*Temp, utilisé que pour la fusion de DEUX fichiers*/
-		if (fusion) {
-				elf_struct1 = Init_f_elfstruct(argv[optind],elf_struct1);
-				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
-				lancer_fusion(elf_struct1, elf_struct2);
-		}
-		
-		if (affM) {
-				elf_struct2 = Init_f_elfstruct(argv[optind+1],elf_struct2);
-				menu(elf_struct1, elf_struct2);
-		}
-	}
-	
-	// Sortie propre
-	if (elf_struct2 != NULL)
-		close_elf_struct(elf_struct2);
-	close_elf_struct(elf_struct1);
-
-	return EXIT_SUCCESS;
-
 }

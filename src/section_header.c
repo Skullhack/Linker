@@ -7,16 +7,20 @@
 #include <string.h>
 
 
-/**********************************/
-/************************************/
+/********************************************/
+/**Chargement des données dans la structure**/
+/********************************************/
 int header_section(ELF_STRUCT * elf ){
 	
-	fseek(elf->elf_file,elf->elf_header->e_shoff,SEEK_SET);
+	fseek(elf->elf_file,elf->elf_header->e_shoff,SEEK_SET); //Place la tête à la fin du header
 
 	elf->a_shdr = malloc(sizeof(Elf32_Shdr)*elf->elf_header->e_shnum);
 
-	for(int i = 0; i < elf->elf_header->e_shnum; i++) {
-		fread(&(elf->a_shdr[i]), sizeof(Elf32_Shdr), 1, elf->elf_file);
+	for(int i = 0; i < elf->elf_header->e_shnum; i++) { //Boucle qui parcours le nombre de section
+		//i est le numéro de la section
+		if ( fread(&(elf->a_shdr[i]), sizeof(Elf32_Shdr), 1, elf->elf_file) == -1 ) { //Place le header dans la partie elf_header de la structure
+        return -1; //Impossible de lire le fichier
+    };
 
 		if (elf->elf_header->e_ident[EI_DATA] == 2) {
 			elf->a_shdr[i].sh_name = reverse_4(elf->a_shdr[i].sh_name);
@@ -34,6 +38,8 @@ int header_section(ELF_STRUCT * elf ){
 	return 1;
 }
 
+/************************************/
+/**Affichage du header de section**/
 /************************************/
 void Affichage_section(ELF_STRUCT * elf ){
 	printf("╔═════════════════════════════════════════════════════════════════════════════════════════╗\n");
@@ -65,6 +71,8 @@ void Affichage_section(ELF_STRUCT * elf ){
 	printf("\n  C (compressé)\n");
 }
 
+/************************************/
+/**Traduit les variables en texte**/
 /************************************/
 void case_flags(Elf32_Word flag) {
 
