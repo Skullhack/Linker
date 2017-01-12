@@ -95,7 +95,7 @@ void affichageContenuSection(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
 		while (choix != 1 && choix != 2) {
 			GetInteger("Quel fichier ? (numéro)\n", &choix);
 			if (choix == 1) {
-				choix_section(elf_struct1);
+				choix_section(elf_struct1)	;
 			} else {
 				choix_section(elf_struct2);
 			}
