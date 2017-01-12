@@ -112,7 +112,6 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
 	//Mise à jour des offsets suivants la shstrtab
 	maj_offset(elf, elf->elf_header->e_shstrndx, taille_nom);
 }
-////////////////////////////////
 
 void ajout_contenu_section(ELF_STRUCT * elf, ELF_STRUCT * elf2, int num) {
 	elf->sections_content = realloc(elf->sections_content, sizeof *(elf->sections_content) * elf->elf_header->e_shnum + elf->a_shdr[elf->elf_header->e_shnum - 1].sh_size);
@@ -120,7 +119,23 @@ void ajout_contenu_section(ELF_STRUCT * elf, ELF_STRUCT * elf2, int num) {
 }
 
 
-
+void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
+	int i = 0;
+	int j;
+	sf[0] = '\0';
+	
+	while (i < size1) {
+		sf[i] = s1[i];
+		i++;
+	}
+	j = i;
+	i = 0;
+	while (i < size2) {
+		sf[j] = s2[i];
+		i++;
+		j++;
+	}
+}
 
 
 

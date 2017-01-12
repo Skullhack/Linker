@@ -35,24 +35,6 @@ void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	ajout_contenu_section(elf1, elf2, num);
 }
 
-void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
-	int i = 0;
-	int j;
-	sf[0] = '\0';
-	
-	while (i < size1) {
-		sf[i] = s1[i];
-		i++;
-	}
-	j = i;
-	i = 0;
-	while (i < size2) {
-		sf[j] = s2[i];
-		i++;
-		j++;
-	}
-}
-
 void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	Elf32_Shdr * shelf1 = elf1->a_shdr;
 	Elf32_Shdr * shelf2 = elf2->a_shdr;
