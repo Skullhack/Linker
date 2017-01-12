@@ -114,7 +114,10 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			fclose(g);
 			
 			//	Récupération du nom de la section à ajouter
-			char nom_section[strlen(get_name(elf_file2, i))] = get_name(elf_file2, i);
+			char nom_section[strlen(get_name(elf_file2, i))];
+			strcpy(nom_section, get_name(elf_file2, i));
+			printf("nom_section %s\n", nom_section);
+			//nom_section = get_name(elf_file2, i);
 			
 			// 	Modification du size de sh_strtab (le +1 correspond au caractère '\0')
 			elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size += strlen(get_name(elf_file2, i)) + 1;
@@ -124,7 +127,7 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + (strlen(get_name(elf_file2, i))+1) );	//	A CONFIRMER
 			//elf_file1->sections_content[elf_file1->elf_header->e_shstrndx] = strcat(elf_file1->sections_content[elf_file1->elf_header->e_shstrndx], get_name(elf_file2, i));	//	PAS POSSIBLE
 			
-			for(j = 0; j < strlen(get_name(elf_file2, i); j++){
+			for(j = 0; j < strlen(get_name(elf_file2, i)); j++){
 				elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name + j] = nom_section[j];
 			}
 			
