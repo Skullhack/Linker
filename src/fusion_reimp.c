@@ -154,8 +154,8 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_offset = add_off_sect;
 					
 			//	Ajout du contenu de la section du fichier 2 après toutes les autres sections du fichier 1
-			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);	//	A CONFIRMER
-			memcpy(&(elf_file1->sections_content[elf_file1->elf_header->e_shnum - 1]), &(elf_file2->sections_content[i]), elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);	//	A CONFIRMER
+			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);
+			memcpy(&(elf_file1->sections_content[elf_file1->elf_header->e_shnum - 1]), &(elf_file2->sections_content[i]), elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_size);
 			
 			//	Modification dans le header de l'offset de la première entête de section
 			elf_file1->elf_header->e_shoff += (strlen(get_name(elf_file2, i)) + 1) + elf_file2->a_shdr[i].sh_size;

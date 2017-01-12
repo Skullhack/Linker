@@ -47,7 +47,7 @@ int max_offset_section(ELF_STRUCT * elf);
 void ajout_nom_section(ELF_STRUCT * elf, char * nom);
 
 //Ajoute le contenu de la section dans la structure elf
-void ajout_contenu_section(ELF_STRUCT * elf, char * contenu);
+void ajout_contenu_section(ELF_STRUCT * elf, ELF_STRUCT * elf2, int num);
 
 #define reverse_2(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))
 #define reverse_4(x) ((((x)&0xFF)<<24)|((((x)>>8)&0xFF)<<16)|\

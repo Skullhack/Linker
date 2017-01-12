@@ -113,18 +113,9 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
 }
 ////////////////////////////////
 
-void ajout_contenu_section(ELF_STRUCT * elf, char * contenu) {
-	int taille_contenu = strlen(contenu);
-
-	//Réallocation de l'espace alloué aux contenus de section
-	printf("Réalloc début\n");
-	elf->sections_content = realloc(elf->sections_content, elf->elf_header->e_shnum);
-	printf("Réalloc fin\n");
-	
-	printf("Malloc début\n");
-	elf->sections_content[elf->elf_header->e_shnum] = malloc(sizeof(char) * taille_contenu);
-	printf("Malloc fin\n\n");
-	//elf->sections_content[elf->elf_header->e_shnum] = contenu;
+void ajout_contenu_section(ELF_STRUCT * elf, ELF_STRUCT * elf2, int num) {
+	elf->sections_content = realloc(elf->sections_content, sizeof *(elf->sections_content) * elf->elf_header->e_shnum + elf->a_shdr[elf->elf_header->e_shnum - 1].sh_size);
+	memcpy(&(elf->sections_content[elf->elf_header->e_shnum - 1]), &(elf2->sections_content[num]), elf->a_shdr[elf->elf_header->e_shnum - 1].sh_size);
 }
 
 

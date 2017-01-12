@@ -11,7 +11,7 @@
 
 void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	fusion_section(elf1, elf2);
-	//fusion_reimp(elf1, elf2);
+	fusion_reimp(elf1, elf2);
 }
 
 void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
@@ -32,7 +32,7 @@ void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	ajout_nom_section(elf1, get_name(elf2, num));
 	
 	//Ajout du contenu de la section
-	//ajout_contenu_section(elf1, elf2->sections_content[num]);
+	ajout_contenu_section(elf1, elf2, num);
 }
 
 void seccat(char * s1, char * s2, char * sf, int size1, int size2) {
@@ -99,7 +99,6 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 				}
 				i++;
 			}
-			//printf("%d\n",trouve);
 			if (!trouve) {
 				ajout_section(elf1, elf2, j);
 			}
