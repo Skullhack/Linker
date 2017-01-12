@@ -6,6 +6,7 @@
 #include "section_header.h"
 #include "util.h"
 #include "global_struct.h"
+#include "reimplantation.h"
 
 const char* relType[] = 
     { 
@@ -22,7 +23,10 @@ const char* relType[] =
         "R_ARM_THM_MOVT_PREL", "", "", "", "", "" 
     };
 
-void tab_Reimplantation(ELF_STRUCT * elf){
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Chargement des données dans la structure "elf"
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int tab_Reimplantation(ELF_STRUCT * elf){
 
 	int t_rel =0;
 	int t_rela =0;
@@ -35,79 +39,41 @@ void tab_Reimplantation(ELF_STRUCT * elf){
 	elf->tab_reimplant = malloc(sizeof(char));
 
 	int taille =0;
+	//Boucle sur le nombre de section
 	for(int i = 0; i< elf->elf_header->e_shnum;i++ ){
+		//Si c'est une section de type Rel, incrémente la taille pour la partie réservé à cette table
 		if(elf->a_shdr[i].sh_type == SHT_REL){
 			taille = elf->a_shdr[i].sh_size/sizeof(Elf32_Rel) + taille;
 		}
 	}
+	//Alloue la partie réservé à cette table grâce à la taille calculé précédemment
 	elf->a_rel = malloc(sizeof(Elf32_Rel)*taille);	
-	for(int i = 0; i< elf->elf_header->e_shnum;i++ ){
-		if(elf->a_shdr[i].sh_type == SHT_REL){
 
+	//Maintenant on reparcours selon le nombre de section pour charger la table de réimplantation
+	for(int i = 0; i< elf->elf_header->e_shnum;i++ ){
+		//Si c'est bien une section Rel
+		if(elf->a_shdr[i].sh_type == SHT_REL){
+			//On place la tête de lecture sur l'offset de la section
 			offset = elf->a_shdr[i].sh_offset ;
 			fseek(elf->elf_file,offset,SEEK_SET);
 
 			taille = elf->a_shdr[i].sh_size/sizeof(Elf32_Rel);	
 			for(int j = 0; j < taille; j++){
-				fread(&(elf->a_rel[t_rel]),sizeof(Elf32_Rel),1,elf->elf_file);
+				if (fread(&(elf->a_rel[t_rel]),sizeof(Elf32_Rel),1,elf->elf_file)==-1) {
+					return -1;
+				}
 				t_rel++;
 			}
 		}
 	}
-	
-/*
-	elf->a_rel = malloc(sizeof(Elf32_Rel));
-
-	for(int i = 0; i< elf->elf_header->e_shnum;i++ ){
-		if(elf->a_shdr[i].sh_type == SHT_REL){
-			
-			offset = elf->a_shdr[i].sh_offset ;
-			fseek(elf->elf_file,offset,SEEK_SET);
-
-			taille = elf->a_shdr[i].sh_size/sizeof(Elf32_Rel);	
-
-			t_rel = t_rel + taille;
-			elf->a_rel = realloc(elf->a_rel,sizeof(Elf32_Rel)*t_rel);
-			fread(elf->a_rel + t_rel*sizeof(Elf32_Rel),sizeof(Elf32_Rel),taille,elf->elf_file);
-		}
-	}*/
-			/*for(int j = t_rel-taille; j<t_rel;j++){
-				elf->tab_reimplant = realloc(elf->tab_reimplant,sizeof(char)*tab_name+1);
-				elf->tab_reimplant[tab_name]=i;
-				tab_name++;
-			}*/
-			
-		
-		/*else if(elf->a_shdr[i].sh_type == SHT_RELA){
-			
-			offset = elf->a_shdr[i].sh_offset ;
-			fseek(elf->elf_file,offset,SEEK_SET);
-
-			taille = elf->a_shdr[i].sh_size/sizeof(Elf32_Rela);	
-			t_rela = t_rela + taille;
-			elf->a_rel = realloc(elf->a_rel,sizeof(Elf32_Rela)*t_rela);
-			fread(elf->a_rela,sizeof(Elf32_Rela),taille,elf->elf_file);
-
-
-	
-			for(int j = t_rela-taille; j<t_rela;j++){
-
-				elf->tab_reimplant = realloc(elf->tab_reimplant,sizeof(char)*tab_name+1);
-				elf->tab_reimplant[tab_name]=i;
-				tab_name++;
-
-				if (elf->elf_header->e_ident[EI_DATA] == 2) {
-					elf->a_rela[j].r_offset = reverse_4(elf->a_rela[j].r_offset);
-					elf->a_rela[j].r_info = reverse_4(elf->a_rela[j].r_info );
-					elf->a_rela[j].r_addend = reverse_4(elf->a_rela[j].r_addend );
-				}
-			}
-		}*/
-	
 	elf->taille_rel = t_rel;
 	elf->taille_rela = t_rela;
+	return 1;
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Affichage de la table de réimplantation des Rel
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Affichage_Rel(ELF_STRUCT * elf){
 	if (elf->taille_rel==0){
 		printf("Aucne table de Rel\n");
@@ -129,7 +95,9 @@ void Affichage_Rel(ELF_STRUCT * elf){
 	}
 }
 
-
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Affichage de la table de réimplantation des Rela
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Affichage_Rela(ELF_STRUCT * elf){
 
 	if (elf->taille_rela==0){

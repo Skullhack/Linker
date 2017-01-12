@@ -4,7 +4,7 @@
 #include <string.h>
 
 /*
-Demande le numéro ou le nom de la section à afficher avant de lancer l'affichage
+Lance l'affichage de la section N°nSec ou de nom nSec
 */
 int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
 	/*printf("Quelle section afficher ?\n");
@@ -52,7 +52,7 @@ int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
 }
 
 /*
-Affiche la section indiqué en paramètre par le "id". Il peut etre soit un nombre soit un nom de section
+Affiche la section N°id
 */
 int display_section(ELF_STRUCT* elf_struct, int id) {
 
@@ -91,9 +91,11 @@ int display_section(ELF_STRUCT* elf_struct, int id) {
 		}
 		printf("╚═══════════════════════════════════════════════════════════════╝\n");
 	return 1;
-
 }
 
+/*
+Charge en mémoire la partie de la section dans la structure.
+*/
 int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, char* section_content) {
 
 	Elf32_Off offset = monShdr->sh_offset; //debut de la section

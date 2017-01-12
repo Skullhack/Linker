@@ -5,73 +5,77 @@
 #include <stdio.h>
 #include "global_struct.h"
 
+/**
+	*BRIEF : Afficher le header.
+	*PARAM : elf_header:
+						Pointeur sur la variable Elf38_Ehdr à afficher.
+**/
 int display_header(Elf32_Ehdr *elf_header);
 
 /**
-  * @brief Gets the human-readeable file's class, or capacity.
-  *
-  *	@param ei_class The Elf32_Ehdr->e_ident[] member identifying the file's class, or capacity.
-  * @return String containing the human-readeable file's class, or capacity.
-  */
-char* get_file_class(unsigned char ei_class);
+	*BRIEF : Charge en mémoire la partie du header dans la structure
+	*PARAM : elf_struct
+						Structure à charger (elf_struct->file est le fichier à lire)
+	*RETURN: Entier: 1->OK -1-> ERREUR
+**/
+int read_header(ELF_STRUCT* elf_struct);
 
 /**
-  * @brief Gets the human-readeable data encoding.
-  *
-  *	@param ei_data The Elf32_Ehdr->e_ident[] member identifying the data encoding.
-  * @return String containing the human-readeable data encoding.
-  */
+	*BRIEF : Traduit une variable classe de fichier en texte.
+	*PARAM : ei_class
+						Variable à traduire
+	*RETURN: String contenant le texte
+**/
+char* get_file_class(unsigned char ei_class);
+
+
+/**
+	*BRIEF : Traduit une variable de données encodées en texte.
+	*PARAM : ei_data
+						Variable à traduire
+	*RETURN: String contenant le texte
+**/
 char* get_data_encoding(unsigned char ei_data);
 
 /**
-  * @brief Gets the human-readeable ELF header version number.
-  *
-  *	@param ei_version The Elf32_Ehdr->e_ident[] member identifying the ELF header version number.
-  * @return String containing the human-readeable ELF header version number.
-  */
+	*BRIEF : Traduit une variable de version de header en texte.
+	*PARAM : ei_version
+						Variable à traduire
+	*RETURN: String contenant le texte
+**/
 char* get_header_version(unsigned char ei_version);
 
-
 /**
-  * @brief Gets the human-readeable operating system.
-  *
-  *	@param ei_osabi The Elf32_Ehdr->e_ident[] member identifying the operating system.
-  * @return String containing the human-readeable operating system.
-  */
+	*BRIEF : Traduit une variable de système d'exploitation en texte.
+	*PARAM : ei_osabi
+						Variable à traduire
+	*RETURN: String contenant le texte
+**/
 char* get_operating_system(unsigned char ei_osabi);
 
 /**
-  * @brief Gets the human-readeable object file type.
-  *
-  *	@param e_type The Elf32_Ehdr member identifying the object file type.
-  * @return String containing the human-readeable object file type.
-  */
+	*BRIEF : Traduit une variable de type d'objet en texte.
+	*PARAM : e_type
+						Variable à traduire
+	*RETURN: String contenant le texte
+**/
 char* get_object_file_type(Elf64_Half e_type);
 
 /**
-  * @brief Gets the human-readeable required architecture for an individual file.
-  *
-  *	@param e_machine The Elf32_Ehdr member identifying the required architecture for an individual file.
-  * @return String containing the human-readeable required architecture for an individual file.
-  */
+	*BRIEF : Traduit une variable d'architecture de fichier en texte.
+	*PARAM : e_machine
+						Variable à traduire
+	*RETURN: String contenant le texte
+**/
 char* get_architecture(Elf64_Half e_machine);
 
 /**
-  * @brief Gets the human-readeable object file version.
-  *
-  *	@param e_version The Elf32_Ehdr member identifying the object file version.
-  * @return String containing the human-readeable object file version.
-  */
+	*BRIEF : Traduit une variable de version d'objet de fichier en texte.
+	*PARAM : e_version
+						Variable à traduire
+	*RETURN: String contenant le texte
+**/
 char* get_object_file_version(Elf32_Word e_version);
 
-/**
-  * @brief Reads data of an ELF header from a given file and puts the data into a given header struct.
-  *
-  * @param f The file we're reading from. The file must have been opened beforehand.
-  * @param elf_header The header struct to be filled. Memory must have been allocated beforehand.
-  * @return -1 if fread error.
-  * @return  1 otherwise.
-  */
-int read_header(ELF_STRUCT* elf_struct);
 
 #endif

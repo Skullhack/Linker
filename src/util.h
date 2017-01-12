@@ -31,10 +31,22 @@ Contact: Guillaume.Huard@imag.fr
 
 int is_big_endian();
 
-//If we need to reverse the bytes, return 1
+/**
+	*BRIEF : Fait un reverse 
+	*PARAM : ei_data:
+						variable à reverse
+	*RETURN: version reverse de la variable.
+**/
 int need_reverse(unsigned char ei_data);
 
-// Renvoi le nom de la section
+/**
+	*BRIEF : Renvoi un le nom d'un section header
+	*PARAM : elf:
+						structure à lire
+					 numero:
+						numéro du section header a lire le nom
+	*RETURN: Une chaine de caractère avec le nom.
+**/
 char* get_name(ELF_STRUCT * elf,int numero);
 
 //Décale l'offset des sections après la section num de size
