@@ -3,9 +3,6 @@
 #include <string.h>
 #include "util.h"
 
-//	test
-#include <stdio.h>
-
 /*	!!! ATTENTION !!! : DANS LA STRUCTURE, LES SECTIONS (**sections_content) SONT DANS 
 	LE MEME ORDRE QUE LES ENTETES DE SECTION (c'est plus simple pour programmer et on 
 	réécrira grâce aux offsets dans le fichier final)	*/
@@ -20,7 +17,17 @@
 //  Modifier le contenu de sh_strtab (REALLOC de elf_file1->sections_content[])													----------> FAIT
 //	Modification de l'offset de toutes les sections qui se trouvent après .shstrtab (nouvel appel de offset_section_update())	---------->	FAIT
 //	Concaténation du contenu de chaque nouvelle section à la suite des sections (REALLOC de elf_file1->sections_content)		---------->	FAIT
-//	Dans le header recalculer l'offset de la première entête de section
+//	Dans le header recalculer l'offset de la première entête de section															---------->	FAIT
+
+/*	Très utile pour débugger, permet de voir le contenu d'une section 
+	(ouvrir le fichier avec l'éditeur de texte online https://hexed.it/ )	*/
+/*FILE * g;			
+g = fopen("shstrtab_avant.txt", "w");			
+for(j = 0; j < elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size; j++){
+	fprintf(g, "%c", elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][j]);			
+}			
+fclose(g);*/
+
 
 //	Programme principale de fusion des tables de réimplantation de 2 fichiers objets
 void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
@@ -58,7 +65,8 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 					/*	Concaténation de la section du fichier 2 à la fin de la section 
 						équivalente dans elf_file1->sections_content[i]	*/
 					elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + elf_file2->a_shdr[j].sh_size);	//	A CONFIRMER
-					elf_file1->sections_content[i] = strcat(elf_file1->sections_content[i], elf_file2->sections_content[j]);	//	A CONFIRMER
+					//elf_file1->sections_content[i] = strcat(elf_file1->sections_content[i], elf_file2->sections_content[j]);	//	A CONFIRMER
+					seccat(elf_file1->sections_content[i], elf_file2->sections_content[j], elf_file1->sections_content[i], elf_file1->a_shdr[i].sh_size, elf_file2->a_shdr[j].sh_size);
 					
 					/*	Modification du size de la section du fichier 1 en rajoutant le 
 						size de la section du fichier 2	*/
@@ -89,32 +97,27 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 
 			//	------------------------------------------AJOUT DE L'ENTETE DE LA SECTION------------------------------------------
 			//	Ajout de l'entête de section du fichier 2 après toutes les entêtes de section du fichier 1
-			elf_file1->a_shdr = realloc(elf_file1->a_shdr, sizeof(Elf32_Shdr) * (elf_file1->elf_header->e_shnum + 1));	//	A CONFIRMER
-			memcpy(&(elf_file1->a_shdr[elf_file1->elf_header->e_shnum]), &(elf_file2->a_shdr[i]), sizeof(Elf32_Shdr));	//	A CONFIRMER
+			elf_file1->a_shdr = realloc(elf_file1->a_shdr, sizeof(Elf32_Shdr) * (elf_file1->elf_header->e_shnum + 1));
+			memcpy(&(elf_file1->a_shdr[elf_file1->elf_header->e_shnum]), &(elf_file2->a_shdr[i]), sizeof(Elf32_Shdr));
 			elf_file1->elf_header->e_shnum += 1;
 			
 			//	------------------------------------------AJOUT DU NOM DE LA SECTION------------------------------------------
 			//	Modification du sh_name de la nouvelle section ajoutée
-			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name = elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size;
+			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name = elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size;			
 			
 			//	Récupération du nom de la section à ajouter
 			char nom_section[strlen(get_name(elf_file2, i))];
 			strcpy(nom_section, get_name(elf_file2, i));
-			//nom_section = get_name(elf_file2, i);
 			
 			// 	Modification du size de sh_strtab (le +1 correspond au caractère '\0')
 			elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size += strlen(get_name(elf_file2, i)) + 1;
 			
 			//	Concaténation du nom de la section à la fin de .shstrtab
-			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + (strlen(get_name(elf_file2, i))+1) );	//	A CONFIRMER
-			//elf_file1->sections_content[elf_file1->elf_header->e_shstrndx] = strcat(elf_file1->sections_content[elf_file1->elf_header->e_shstrndx], get_name(elf_file2, i));	//	PAS POSSIBLE
-			
+			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + (strlen(get_name(elf_file2, i))+1) );			
 			for(j = 0; j < strlen(get_name(elf_file2, i)); j++){
 				elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name + j] = nom_section[j];
-			}
-			
-			elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name + j] = '\0';		
-			
+			}			
+			elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name + j] = '\0';			
 			
 			//	Modification de l'offset de toutes les sections suivant .shstrtab
 			maj_offset(elf_file1,elf_file1->elf_header->e_shstrndx, strlen(get_name(elf_file2, i)) + 1);

@@ -71,6 +71,11 @@ void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2) {
 			break;
 			case 7:
 				lancer_fusion(elf_struct1, elf_struct2);
+				display_header(elf_struct1->elf_header);
+				Affichage_section(elf_struct1);
+				afficher_table(elf_struct1);
+				Affichage_Rel(elf_struct1);
+				Affichage_Rela(elf_struct1);
 			break;
 			case 8:
 				printf("Fermeture du programme\n");
