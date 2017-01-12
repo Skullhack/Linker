@@ -10,11 +10,11 @@
 #include "fusion_reimp.h"
 
 void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
-	fusion_section(elf1, elf2);
-	//fusion_reimp(elf1, elf2);
+	//fusion_section(elf1, elf2);
+	fusion_reimp(elf1, elf2);
 }
 
-void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
+/*void ajout_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2, int num) {
 	int offset_supp = 0;
 	
 	//Incrémentation du nombre de section
@@ -73,7 +73,7 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					cont_section2 = elf2->sections_content[j];
 					seccat(cont_section1, cont_section2, cont_final, shelf1[i].sh_size, shelf2[j].sh_size);
 					
-					/*printf("Début section %s\n", get_name(elf1,i));
+					//printf("Début section %s\n", get_name(elf1,i));
 					for (int k = 0; k < shelf1[i].sh_size; k++) {
 						varAff = cont_section1[k];
 						printf("%x",varAff);
@@ -90,7 +90,7 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 					}
 					printf("\nFin section %s\n\n", get_name(elf1,i));*/
 					
-					elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
+					/*elf1->a_shdr[i].sh_size = shelf1[i].sh_size+shelf2[j].sh_size;
 					elf1->sections_content[i] = realloc(elf1->sections_content[i], elf1->a_shdr[i].sh_size);
 					elf1->sections_content[i] = cont_final;
 					maj_offset(elf1, i, shelf2[j].sh_size);
@@ -138,5 +138,5 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 
 
 	
-}
+}*/
 

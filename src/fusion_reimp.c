@@ -3,6 +3,9 @@
 #include <string.h>
 #include "util.h"
 
+//	test
+#include <stdio.h>
+
 /*	!!! ATTENTION !!! : DANS LA STRUCTURE, LES SECTIONS (**sections_content) SONT DANS 
 	LE MEME ORDRE QUE LES ENTETES DE SECTION (c'est plus simple pour programmer et on 
 	réécrira grâce aux offsets dans le fichier final)	*/
@@ -102,12 +105,27 @@ void fusion_reimp(ELF_STRUCT * elf_file1, ELF_STRUCT * elf_file2){
 			//	Modification du sh_name de la nouvelle section ajoutée
 			elf_file1->a_shdr[elf_file1->elf_header->e_shnum - 1].sh_name = elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size;
 			
+			FILE * g;			
+			g = fopen("shstrtab_avant.txt", "w");			
+			for(j = 0; j < elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size; j++){
+				fprintf(g, "%c", elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][j]);			
+			}			
+			fclose(g);
+			
 			// 	Modification du size de sh_strtab (le +1 correspond au caractère '\0')
 			elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size += strlen(get_name(elf_file2, i)) + 1;
 			
+			//	BUG ICI
 			//	Concaténation du nom de la section à la fin de .shstrtab
 			elf_file1->sections_content = realloc(elf_file1->sections_content, sizeof *(elf_file1->sections_content) * elf_file1->elf_header->e_shnum + (strlen(get_name(elf_file2, i))+1) );	//	A CONFIRMER
 			elf_file1->sections_content[elf_file1->elf_header->e_shstrndx] = strcat(elf_file1->sections_content[elf_file1->elf_header->e_shstrndx], get_name(elf_file2, i));	//	A CONFIRMER
+			
+			FILE * f;			
+			f = fopen("shstrtab_apres.txt", "w");			
+			for(j = 0; j < elf_file1->a_shdr[elf_file1->elf_header->e_shstrndx].sh_size; j++){
+				fprintf(f, "%c", elf_file1->sections_content[elf_file1->elf_header->e_shstrndx][j]);			
+			}			
+			fclose(f);
 			
 			//	Modification de l'offset de toutes les sections suivant .shstrtab
 			maj_offset(elf_file1,elf_file1->elf_header->e_shstrndx, strlen(get_name(elf_file2, i)) + 1);
