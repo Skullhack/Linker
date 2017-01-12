@@ -89,11 +89,12 @@ void menu(ELF_STRUCT * elf_struct1, ELF_STRUCT * elf_struct2) {
 }
 
 void affichageComplet(ELF_STRUCT* elf_struct1, ELF_STRUCT* elf_struct2) {
-	//à compléter	
 	if (elf_struct2 == NULL) {
 		display_header(elf_struct1->elf_header);
 		Affichage_section(elf_struct1);
-		printf("Suite en cours");
+		afficher_table(elf_struct1);
+		Affichage_Rel(elf_struct1);
+		Affichage_Rela(elf_struct1);
 	} else {
 		int choix = 0;
 		while (choix != 1 && choix != 2) {
