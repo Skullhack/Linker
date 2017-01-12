@@ -47,12 +47,14 @@ char* get_name(ELF_STRUCT * elf,int numero){
 		taille_mot++;
 		i++;
 	}
+	taille_mot++;
 	
 	str = malloc(sizeof(char)*taille_mot);
-	for (i = offset; i < taille_mot+offset; i++) {
+	for (i = offset; i < taille_mot+offset-1; i++) {
 		str[j] = shstr[i];
 		j++;
 	}
+	str[taille_mot] = '\0';
 	
 	return str;
 }
@@ -95,7 +97,6 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
 	int shstr_size = elf->a_shdr[elf->elf_header->e_shstrndx].sh_size;
 	int i;
 	
-	nom[taille_nom]='\0';
 	//Modification de l'en-tête de section de shstr
 	elf->a_shdr[elf->elf_header->e_shstrndx].sh_size = elf->a_shdr[elf->elf_header->e_shstrndx].sh_size + taille_nom;
 	
@@ -103,13 +104,9 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
 	elf->sections_content[elf->elf_header->e_shstrndx] = realloc(elf->sections_content[elf->elf_header->e_shstrndx], elf->a_shdr[elf->elf_header->e_shstrndx].sh_size+1);
 	
 	//Concaténation du nom dans la shstrtab
-	//printf("%s\n" ,nom);
-	//printf("%d\n",taille_nom);
 	for (i = 0; i < taille_nom; i++) {
 		elf->sections_content[elf->elf_header->e_shstrndx][shstr_size + i+1] = nom[i];
-		//printf("%c\n",nom[i]);
 	}
-	//printf("%s\n", get_name(elf,23));
 	
 	//Mise à jour des offsets suivants la shstrtab
 	maj_offset(elf, elf->elf_header->e_shstrndx, taille_nom);
@@ -117,13 +114,13 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
 ////////////////////////////////
 
 void ajout_contenu_section(ELF_STRUCT * elf, char * contenu) {
-	int taille_contenu = strlen(contenu);
-	
+	//int taille_contenu = strlen(contenu)+1;
+
 	//Réallocation de l'espace alloué aux contenus de section
 	elf->sections_content = realloc(elf->sections_content, elf->elf_header->e_shnum+1);
 	
-	elf->sections_content[elf->elf_header->e_shnum] = realloc(elf->sections_content[elf->elf_header->e_shnum], taille_contenu);
-	elf->sections_content[elf->elf_header->e_shnum] = contenu;
+	//elf->sections_content[elf->elf_header->e_shnum] = realloc(elf->sections_content[elf->elf_header->e_shnum], taille_contenu);
+	//elf->sections_content[elf->elf_header->e_shnum] = contenu;
 }
 
 
