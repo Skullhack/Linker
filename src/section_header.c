@@ -36,14 +36,14 @@ int header_section(ELF_STRUCT * elf ){
 
 /************************************/
 void Affichage_section(ELF_STRUCT * elf ){
-	printf("╔═══════════════════════════════════════════════════════════════════════════════════════╗\n");
-	printf("║                                 \e[1;31mEn-tête de section :\e[0m                                  ║\n");
-	printf("╟─────┬─────────────────┬───────────────┬─────────┬───────┬───────┬───┬────┬───┬────┬───╢\n");
-	printf("║%-5s│%-17s│%-15s│%-9s│%-7s│%-7s│%-3s│%-4s│%-3s│%-4s│%-3s║\n","[Nr]","Nom","Type","Adr","Offset","Taille","ES","Flg","LN","Inf","Al");
-	printf("╟─────┼─────────────────┼───────────────┼─────────┼───────┼───────┼───┼────┼───┼────┼───╢\n");
+	printf("╔═════════════════════════════════════════════════════════════════════════════════════════╗\n");
+	printf("║                                  \e[1;31mEn-tête de section :\e[0m                                   ║\n");
+	printf("╟─────┬───────────────────┬───────────────┬─────────┬───────┬───────┬───┬────┬───┬────┬───╢\n");
+	printf("║%-5s│%-19s│%-15s│%-9s│%-7s│%-7s│%-3s│%-4s│%-3s│%-4s│%-3s║\n","[Nr]","Nom","Type","Adr","Offset","Taille","ES","Flg","LN","Inf","Al");
+	printf("╟─────┼───────────────────┼───────────────┼─────────┼───────┼───────┼───┼────┼───┼────┼───╢\n");
 	for(int i = 0; i <  elf->elf_header->e_shnum; i++){
 		printf("║  %-3d",i);
-		printf("│%-17s",get_name(elf,i));
+		printf("│%-19s",get_name(elf,i));
 		printf("│%-15s",case_type(elf->a_shdr[i].sh_type));
 		printf("│%-9.8x",elf->a_shdr[i].sh_addr);
 		printf("│%-7.6x",elf->a_shdr[i].sh_offset);
@@ -55,7 +55,7 @@ void Affichage_section(ELF_STRUCT * elf ){
 		printf("│%4x",elf->a_shdr[i].sh_info);
 		printf("│%3x║\n",elf->a_shdr[i].sh_addralign);
 	}
-	printf("╚═════╧═════════════════╧═══════════════╧═════════╧═══════╧═══════╧═══╧════╧═══╧════╧═══╝\n");
+	printf("╚═════╧═══════════════════╧═══════════════╧═════════╧═══════╧═══════╧═══╧════╧═══╧════╧═══╝\n");
 	printf("\nClés des Flags :");
 	printf("\n  W (écriture), A (allocation), X(exécution), M (fusion)");
 	printf("\n  S (chaînes), I (info), L (ordre des liens), G (groupe)");

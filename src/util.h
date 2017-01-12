@@ -49,6 +49,9 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom);
 //Ajoute le contenu de la section dans la structure elf
 void ajout_contenu_section(ELF_STRUCT * elf, ELF_STRUCT * elf2, int num);
 
+//Concatène le contenue des sections
+void seccat(char * s1, char * s2, char * sf, int size1, int size2);
+
 #define reverse_2(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))
 #define reverse_4(x) ((((x)&0xFF)<<24)|((((x)>>8)&0xFF)<<16)|\
 						((((x)>>16)&0xFF)<<8)|(((x)>>24)&0xFF))

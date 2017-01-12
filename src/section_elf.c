@@ -62,7 +62,7 @@ int display_section(ELF_STRUCT* elf_struct, int id) {
 		unsigned int cptAdrs=0; //l'adresse des mots
 
 		printf("╔═══════════════════════════════════════════════════════════════╗\n");
-    	printf("║                       \e[1;31mELF Section n°:%d\e[0m                        ║\n",id);
+    	printf("║                       \e[1;31mELF Section n°:%3d\e[0m                      ║\n",id);
     	printf("╠═══════════════════════════════════════════════════════════════╣\n");
 		
 
