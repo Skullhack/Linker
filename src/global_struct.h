@@ -11,16 +11,16 @@
 
 typedef struct ELF_STRUCT {
 
-	FILE* elf_file;
-	Elf32_Ehdr *elf_header;
-	Elf32_Shdr *a_shdr;
-	Elf32_Sym *a_sym;
-	Elf32_Rel *a_rel;
-	Elf32_Rela *a_rela;
-	char **sections_content;
-	int * tab_reimplant;
-	int taille_rel;
-	int taille_rela;
+	FILE* elf_file; 				//Le fichier
+	Elf32_Ehdr *elf_header;	//Le header
+	Elf32_Shdr *a_shdr;			//Tableau de section header
+	Elf32_Sym *a_sym;				//Tableau de symbole
+	Elf32_Rel *a_rel;				//Tableau de réimplantation Rel
+	Elf32_Rela *a_rela;			//Tableau de réimplantation Rela (toujours vide car non géré)
+	char **sections_content;//Tableau de char*, chaque char* est le contenu d'un section
+	int * tab_reimplant;		//
+	int taille_rel;					//Nombre de réimplantation Rel
+	int taille_rela;				//Nombre de réimplantation Rel (toujours vide car non géré)
 	int error_code; 
 
 } ELF_STRUCT;

@@ -4,22 +4,12 @@
 #include <string.h>
 
 /*
-Demande le numéro ou le nom de la section à afficher avant de lancer l'affichage
+Lance l'affichage de la section N°nSec ou de nom nSec
 */
 int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
-	/*printf("Quelle section afficher ?\n");
-	
-	char sec[100]; */
 	int nbSection = elf_struct->elf_header->e_shnum;
 
-	/*printf("Saisir le numéro (la recherche par nom n'est pas implanté pour le moment...) : ");
-	fgets(sec, sizeof(sec),stdin);*/
-
-	//if (sec[0]=='.') { //a terminer, si le nom est saisie.
-	if (nSec[0]=='.') {
-		//char secName[strlen(sec)-1];
-		//memcpy(secName,sec,strlen(sec)-1);
-		
+	if (nSec[0]=='.') {		
 		int nbAffiche=0;
 
 		int nbSection = elf_struct->elf_header->e_shnum;
@@ -52,7 +42,7 @@ int choix_section(ELF_STRUCT * elf_struct, char* nSec) {
 }
 
 /*
-Affiche la section indiqué en paramètre par le "id". Il peut etre soit un nombre soit un nom de section
+Affiche la section N°id
 */
 int display_section(ELF_STRUCT* elf_struct, int id) {
 
@@ -91,9 +81,11 @@ int display_section(ELF_STRUCT* elf_struct, int id) {
 		}
 		printf("╚═══════════════════════════════════════════════════════════════╝\n");
 	return 1;
-
 }
 
+/*
+Charge en mémoire la partie de la section dans la structure.
+*/
 int read_section(Elf32_Shdr* monShdr, ELF_STRUCT* elf_struct, char* section_content) {
 
 	Elf32_Off offset = monShdr->sh_offset; //debut de la section

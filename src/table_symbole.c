@@ -5,97 +5,11 @@
 
 #include "util.h"
 #include "global_struct.h"
+#include "table_symbole.h"
 
-char* afficher_type(unsigned char st_info){
-	
-	st_info = ELF32_ST_TYPE(st_info);
-	switch(st_info){
-		case 0 :
-		 	return "NOTYPE";
-		 	break;
-		case 1 :
-		 	return "OBJECT";
-			break;
-		case 2 :
-		 	return "FUNC";
-			break;			 
-		case 3 :
-		 	return "SECTION";
-			break;			 
-		case 4 :
-		 	return "FILE";
-			break;			 
-		case 13 :
-		 	return "LOPROC";
-			break;			 
-		case 15 :
-			return "HIPROC";
-			break;
-		default: 
-		 	return "UNDEF";
-	}
-}
-
-char* afficher_bind(unsigned char st_info){
-	
-	st_info = ELF32_ST_BIND(st_info);
-	
-	switch(st_info){
-		case 0 :
-		 	return "LOCAL";
-		 	break;
-		case 1 :
-		 	return "GLOBAL";
-			break;
-		case 2 :
-		 	return "WEAK";
-			break;			 
-		case 13 :
-		 	return "LOPROC";
-			break;			 
-		case 15 :
-		 	return "HIPROC";
-			break;
-		default: 
-		 	return " ";
-	}
-}
-
-char* afficher_vis(unsigned char st_other){
-	switch(st_other){
-		case 0 :
-		 	return "DEFAULT";
-		 	break;
-		case 1 :
-		 	return "INTERNAL";
-			break;
-		case 2 :
-		 	return "HIDDEN";
-			break;			 
-		case 3 :
-		 	return "PROTECTED";
-			break;
-		default: 
-		 	return " ";
-	}
-}
-
-void afficher_ndx(Elf32_Section st_shndx){
-	switch(st_shndx){
-		case 0 :
-		 	printf("%-4s","UND");
-		 	break;
-		case 65521 :
-		 	printf("%-4s","ABS");
-			break;
-		case 65522 :
-		 	printf("%-4s","COM");
-			break;
-		default:
-			printf("%-4d", st_shndx);
-	}
-}
-
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Chargement des données dans la structure "elf"
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int creer_table_symbole(ELF_STRUCT * elf){
 	int reverse_needed;
 	int i=0;
@@ -142,6 +56,9 @@ int creer_table_symbole(ELF_STRUCT * elf){
 	return 1;	
 }
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Affichage de la table des symboles
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void afficher_table(ELF_STRUCT * elf){
 	int i=0, j=0;
 	int taille_tab_symb;
@@ -149,29 +66,6 @@ void afficher_table(ELF_STRUCT * elf){
 	uint32_t adr_tab_str;
 	int adr_symb_name;
 	char symb_name[50]="";
-	
-	//Methode 1 (dégueulasse): On cherche la section shstrtab dans un premier temps
-	/*while(i < elf->elf_header->e_shnum && elf->a_shdr[i].sh_type != 3){
-		i += 1;
-	}	
-	//On la saute
-	i+=1;	
-	//Puis on cherche la section strtab
-	while(i < elf->elf_header->e_shnum && elf->a_shdr[i].sh_type != 3){
-		i += 1;
-	}*/	
-	
-	//Methode 2 (ne marche pas) : On cherche la section strtab
-	/*while(i < elf->elf_header->e_shnum && strcmp(give_section_name(elf, i), ".strtab") != 0){
-		i+=1;
-	}*/
-	
-	//AIDE
-	//Affiche le nom de chaque section
-	/*while(i < elf->elf_header->e_shnum){
-		printf("Le nom de la section est : %s et son indice : %d\n", give_section_name(elf, i), i);
-		i += 1;
-	}*/
 	
 	/*	Méthode 3 : On cherche la section strtab mais si l'indice est egal 
 		à elf_header->e_shstrndx (qui correspond à l'indice de shstrtab), on le saute */
@@ -215,9 +109,9 @@ void afficher_table(ELF_STRUCT * elf){
 		printf("║%-4d│", i);
 		printf("%-9.8x│", elf->a_sym[i].st_value);
 		printf("%-7d│", elf->a_sym[i].st_size);		
-		printf("%-8s│",afficher_type(elf->a_sym[i].st_info));
-		printf("%-7s│",afficher_bind(elf->a_sym[i].st_info));
-		printf("%-10s│",afficher_vis(elf->a_sym[i].st_other));
+		printf("%-8s│",case_typeSym(elf->a_sym[i].st_info));
+		printf("%-7s│",case_bind(elf->a_sym[i].st_info));
+		printf("%-10s│",case_vis(elf->a_sym[i].st_other));
 		afficher_ndx(elf->a_sym[i].st_shndx);
 		printf("│");
 		//Affichage du nom
@@ -239,8 +133,7 @@ void afficher_table(ELF_STRUCT * elf){
 			j=-1;	
 			do{
 				j += 1;
-				symb_name[j] = fgetc(elf->elf_file);
-				//printf("le caractère est : %c\n", symb_name[j]);			
+				symb_name[j] = fgetc(elf->elf_file);		
 			}while(symb_name[j] != '\0');
 			
 			printf("%-30s║\n", symb_name);
@@ -250,3 +143,99 @@ void afficher_table(ELF_STRUCT * elf){
 	printf("╚════╧═════════╧═══════╧════════╧═══════╧══════════╧════╧══════════════════════════════╝\n");
 	
 }
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Traduit les variables en texte
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+char* case_typeSym(unsigned char st_info){
+	
+	st_info = ELF32_ST_TYPE(st_info);
+	switch(st_info){
+		case 0 :
+		 	return "NOTYPE";
+		 	break;
+		case 1 :
+		 	return "OBJECT";
+			break;
+		case 2 :
+		 	return "FUNC";
+			break;			 
+		case 3 :
+		 	return "SECTION";
+			break;			 
+		case 4 :
+		 	return "FILE";
+			break;			 
+		case 13 :
+		 	return "LOPROC";
+			break;			 
+		case 15 :
+			return "HIPROC";
+			break;
+		default: 
+		 	return "UNDEF";
+	}
+}
+
+char* case_bind(unsigned char st_info){
+	
+	st_info = ELF32_ST_BIND(st_info);
+	
+	switch(st_info){
+		case 0 :
+		 	return "LOCAL";
+		 	break;
+		case 1 :
+		 	return "GLOBAL";
+			break;
+		case 2 :
+		 	return "WEAK";
+			break;			 
+		case 13 :
+		 	return "LOPROC";
+			break;			 
+		case 15 :
+		 	return "HIPROC";
+			break;
+		default: 
+		 	return " ";
+	}
+}
+
+char* case_vis(unsigned char st_other){
+	switch(st_other){
+		case 0 :
+		 	return "DEFAULT";
+		 	break;
+		case 1 :
+		 	return "INTERNAL";
+			break;
+		case 2 :
+		 	return "HIDDEN";
+			break;			 
+		case 3 :
+		 	return "PROTECTED";
+			break;
+		default: 
+		 	return " ";
+	}
+}
+
+void afficher_ndx(Elf32_Section st_shndx){
+	switch(st_shndx){
+		case 0 :
+		 	printf("%-4s","UND");
+		 	break;
+		case 65521 :
+		 	printf("%-4s","ABS");
+			break;
+		case 65522 :
+		 	printf("%-4s","COM");
+			break;
+		default:
+			printf("%-4d", st_shndx);
+	}
+}
+
+

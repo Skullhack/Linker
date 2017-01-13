@@ -3,6 +3,9 @@
 #include "util.h"
 #include "header_elf.h"
 
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Affichage du header
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int display_header(Elf32_Ehdr *elf_header) {
 
     int i = 0;
@@ -22,7 +25,7 @@ int display_header(Elf32_Ehdr *elf_header) {
         return -1;
     }
 
-    // Start print header
+    // Affichage
     printf("╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
     printf("║                                              \e[1;31mEn-tête ELF:\e[0m                                                 ║\n");
     printf("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
@@ -81,16 +84,19 @@ int display_header(Elf32_Ehdr *elf_header) {
     printf("╚════════════════════════════════════════════════════════╧══════════════════════════════════════════════════╝\n");
     return 1;
  }
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Chargement des données dans la structure "elf_struct"
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int read_header(ELF_STRUCT* elf_struct) {
 
     int reverse_needed;
     int header_size = sizeof(Elf32_Ehdr);
 
-    fseek(elf_struct->elf_file, 0, SEEK_SET);
+    fseek(elf_struct->elf_file, 0, SEEK_SET); //Pose la tête au début du fichier
 
-    if ( fread(elf_struct->elf_header, header_size, 1, elf_struct->elf_file) == -1 ) {
-        return -1;
+    if ( fread(elf_struct->elf_header, header_size, 1, elf_struct->elf_file) == -1 ) { //Place le header dans la partie elf_header de la structure
+        return -1; //Impossible de lire le fichier
     }
 
     // big endian / little endian
@@ -116,7 +122,9 @@ int read_header(ELF_STRUCT* elf_struct) {
 
     return 1;
 }
-
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Traduit les variables en texte
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 char* get_file_class(unsigned char ei_class) {
 
     switch (ei_class) {
