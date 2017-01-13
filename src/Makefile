@@ -3,22 +3,22 @@ CFLAGS=-Wall -Werror
 
 all: linker program_header program_section_header program_section_content program_table_symbole program_reimplantation
 
-linker : linker.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o
+linker : linker.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o fusion_symb.o
 	$(CC) -o $@ $^
 
-program_header: program_header.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o
+program_header: program_header.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o fusion_symb.o
 	$(CC) -o $@ $^
 
-program_section_header: program_section_header.o init.o header_elf.o section_header.o section_elf.o util.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o
+program_section_header: program_section_header.o init.o header_elf.o section_header.o section_elf.o util.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o fusion_symb.o
 	$(CC) -o $@ $^
 
-program_section_content: program_section_content.o init.o header_elf.o section_header.o section_elf.o util.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o
+program_section_content: program_section_content.o init.o header_elf.o section_header.o section_elf.o util.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o fusion_symb.o
 	$(CC) -o $@ $^
 
-program_table_symbole: program_table_symbole.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o
+program_table_symbole: program_table_symbole.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o fusion_symb.o
 	$(CC) -o $@ $^
 
-program_reimplantation: program_reimplantation.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o
+program_reimplantation: program_reimplantation.o init.o header_elf.o util.o section_header.o section_elf.o table_symbole.o reimplantation.o fusion.o fusion_reimp.o fusion_symb.o
 	$(CC) -o $@ $^
 
 %.o: %.c
@@ -35,6 +35,7 @@ table_symbole.o: table_symbole.h global_struct.h util.h
 fusion.o: fusion.h global_struct.h util.h fusion_reimp.h
 util.o: util.h
 fusion_reimp.o: util.h
+fusion_symb.o: util.h section_header.h table_symbole.h global_struct.h
 
 clean:
 	rm *.o linker program_header program_section_header program_section_content program_table_symbole program_reimplantation

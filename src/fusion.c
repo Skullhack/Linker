@@ -8,9 +8,11 @@
 #include "util.h"
 #include "section_header.h"
 #include "fusion_reimp.h"
+#include "fusion_symb.h"
 
 void Fusion(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	fusion_section(elf1, elf2);
+	//fusion_symb(elf1, elf2); //Erreur de segmentation après ajout au reste du code
 	fusion_reimp(elf1, elf2);
 }
 
@@ -44,7 +46,6 @@ void fusion_section(ELF_STRUCT * elf1, ELF_STRUCT * elf2) {
 	int i = 0;
 	int j = 0;
 	int trouve = 0;
-	//unsigned char varAff;
 
 	while (i < elf1->elf_header->e_shnum) {
 		if (shelf1[i].sh_type == SHT_PROGBITS) {

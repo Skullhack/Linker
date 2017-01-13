@@ -31,27 +31,7 @@ void fusion_symb(ELF_STRUCT * elf,ELF_STRUCT * elf1){
 	for(int i = 0 ; i < taille_sym; i++){
 		Ajouter(elf1,i, &l_sym);
 	}
-	/*********************************************************/
-	//printf("Taille sym: %d \n",taille_sym);
-	/*********************************************************/
-
-	/**********************************************************
-	int i_size_tab = 0;
-	while(i_size_tab < elf->elf_header->e_shnum && elf->a_shdr[i_size_tab].sh_type != 3){
-		i_size_tab += 1;
-		if(i_size_tab==elf->elf_header->e_shstrndx){
-			i_size_tab += 1;
-		}
-	}
-	*******
-	int i_size_tab1 = 0;
-	while(i_size_tab1 < elf1->elf_header->e_shnum && elf1->a_shdr[i_size_tab1].sh_type != 3){
-		i_size_tab1 += 1;
-		if(i_size_tab1==elf1->elf_header->e_shstrndx){
-			i_size_tab1 += 1;
-		}
-	}
-	**********************************************************/
+	
 	int taille_res = 0;
 	int j =0;
 	bool b = false;
@@ -204,39 +184,7 @@ void fusion_symb(ELF_STRUCT * elf,ELF_STRUCT * elf1){
 		memcpy(&(elf->a_sym[k]),&(res[k].sym), sizeof(Elf32_Sym));
 	}
 
-	/**Teste **
-	elf->a_shdr[i].sh_size =  elf->a_shdr[i].sh_size + elf1->a_shdr[i_size_tab1].sh_size;
-	elf->sections_content[i] = realloc(elf->sections_content[i],sizeof(char)*elf1->a_shdr[i_size_tab1].sh_size);
-
-	memcpy(elf->sections_content[i]+elf->a_shdr[i].sh_size,elf1->sections_content[i_size_tab1],sizeof(char)*elf1->a_shdr[i_size_tab1].sh_size);
-	*/
-
-	//free(elf->sections_content[i]);
-	//elf->sections_content[i] = malloc(sizeof(char)*cpt);
-
-	FILE * f;			
-	f = fopen("sh_strtab_apres.txt", "w");
-
-	for(int l = 0 ; l< cpt; l++){
-		elf->sections_content[i][l]=str_name[l];
-		//printf(" teste: %c\n",elf->sections_content[i][l]);
-		fprintf(f, "%c",str_name[l]);
-	}
-	fclose(f);
-
-	//memcpy(&(elf->sections_content[i]),&(str_name), sizeof(char)*cpt);
-	//elf->sections_content[i] = realloc(elf->sections_content[i],sizeof(*char)*cpt);
-	//free(elf->sections_content[i]);
-	//elf->sections_content[i] = malloc(sizeof(char)*cpt);
-  //memcpy(&(elf->sections_content[i]),&(str_name), sizeof(char)*cpt);
-	/*for(int l = 0 ; l<taille_res;l++){
-		printf("n°%d : %s  n: %d\n",l, recup_name(elf,elf->a_sym[l].st_name),elf->a_sym[l].st_name);
-	}*/
-
-	/************ SIZE tab_nom **************/
-	//elf->a_shdr[i].sh_size = sizeof(char)*cpt;
-
-	afficher_table_sym(elf);
+	//afficher_table_sym(elf);
 }
 /*********************************************************/
 /*********************************************************/

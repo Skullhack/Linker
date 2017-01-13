@@ -1,19 +1,19 @@
 /*
-ELF Loader - chargeur/implanteur d'exécutables au format ELF à but pédagogique
+ELF Loader - chargeur/implanteur d'exÃ©cutables au format ELF Ã  but pÃ©dagogique
 Copyright (C) 2012 Guillaume Huard
 Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les
-termes de la Licence Publique Générale GNU publiée par la Free Software
-Foundation (version 2 ou bien toute autre version ultérieure choisie par vous).
+termes de la Licence Publique GÃ©nÃ©rale GNU publiÃ©e par la Free Software
+Foundation (version 2 ou bien toute autre version ultÃ©rieure choisie par vous).
 
-Ce programme est distribué car potentiellement utile, mais SANS AUCUNE
+Ce programme est distribuÃ© car potentiellement utile, mais SANS AUCUNE
 GARANTIE, ni explicite ni implicite, y compris les garanties de
-commercialisation ou d'adaptation dans un but spécifique. Reportez-vous à la
-Licence Publique Générale GNU pour plus de détails.
+commercialisation ou d'adaptation dans un but spÃ©cifique. Reportez-vous Ã  la
+Licence Publique GÃ©nÃ©rale GNU pour plus de dÃ©tails.
 
-Vous devez avoir reçu une copie de la Licence Publique Générale GNU en même
-temps que ce programme ; si ce n'est pas le cas, écrivez à la Free Software
+Vous devez avoir reÃ§u une copie de la Licence Publique GÃ©nÃ©rale GNU en mÃªme
+temps que ce programme ; si ce n'est pas le cas, Ã©crivez Ã  la Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
-États-Unis.
+Ã‰tats-Unis.
 
 Contact: Guillaume.Huard@imag.fr
          ENSIMAG - Laboratoire LIG
@@ -72,7 +72,7 @@ char* get_name(ELF_STRUCT * elf,int numero){
 }
 
 /*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Décale l'offset des sections après la section num de size
+DÃ©cale l'offset des sections aprÃ¨s la section num de size
 *//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void maj_offset(ELF_STRUCT * elf, int num, int size) {
@@ -121,18 +121,18 @@ void ajout_nom_section(ELF_STRUCT * elf, char * nom) {
 	int i;
 	nom[taille_nom] = '\0';
 	
-	//Modification de l'en-tête de section de shstr
+	//Modification de l'en-tÃªte de section de shstr
 	elf->a_shdr[elf->elf_header->e_shstrndx].sh_size = elf->a_shdr[elf->elf_header->e_shstrndx].sh_size + taille_nom;
 	
-	//Réallocation de la mémoire pour stocker le nom	
+	//RÃ©allocation de la mÃ©moire pour stocker le nom	
 	elf->sections_content[elf->elf_header->e_shstrndx] = realloc(elf->sections_content[elf->elf_header->e_shstrndx], elf->a_shdr[elf->elf_header->e_shstrndx].sh_size+1);
 	
-	//Concaténation du nom dans la shstrtab
+	//ConcatÃ©nation du nom dans la shstrtab
 	for (i = 0; i < taille_nom; i++) {
 		elf->sections_content[elf->elf_header->e_shstrndx][shstr_size + i + 1] = nom[i];
 	}
 	
-	//Mise à jour des offsets suivants la shstrtab
+	//Mise Ã  jour des offsets suivants la shstrtab
 	maj_offset(elf, elf->elf_header->e_shstrndx, taille_nom);
 }
 
@@ -146,7 +146,7 @@ void ajout_contenu_section(ELF_STRUCT * elf, ELF_STRUCT * elf2, int num) {
 }
 
 /*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Concatène le contenue des sections
+//ConcatÃ¨ne le contenue des sections
 *//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
